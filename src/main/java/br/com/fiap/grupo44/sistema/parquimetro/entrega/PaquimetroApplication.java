@@ -10,4 +10,5 @@ public class PaquimetroApplication {
 		SpringApplication.run(PaquimetroApplication.class, args);
 	}
 
+	
 }
