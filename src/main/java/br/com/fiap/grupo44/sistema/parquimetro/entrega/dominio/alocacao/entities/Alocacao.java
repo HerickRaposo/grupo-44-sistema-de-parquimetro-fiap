@@ -22,8 +22,12 @@ public class Alocacao {
     private Date dataSaida;
     private Date dataInicioPago;
     private Date dataFimPago;
+
+    @ManyToOne
+    @JoinColumn(name = "veiculo_id")
     private Veiculo veiculo;
+
+    @ManyToOne
+    @JoinColumn(name = "estacionamento_id")
     private Estacionamento estacionamento;
-
-
 }

@@ -38,6 +38,7 @@ public class AlocacaoService {
             AlocacaoDTO filtro = new AlocacaoDTO();
             filtro.setDataentrada(dtEntrada);
             filtro.setDataSaida(dtSaida);
+            filtro.setDataInicioPago(dataIniPago);
             filtro.setDataFimPago(dtFimPago);
             return filtro;
         } catch (Exception e) {

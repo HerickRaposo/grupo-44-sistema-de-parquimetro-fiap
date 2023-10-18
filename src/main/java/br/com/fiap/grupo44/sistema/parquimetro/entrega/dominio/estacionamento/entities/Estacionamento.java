@@ -19,5 +19,7 @@ public class Estacionamento {
     private Integer id;
     private String descricao;
     private Boolean estado;
+
+    @OneToMany(mappedBy = "estacionamento")
     private List<Alocacao> listaAlocacao;
 }

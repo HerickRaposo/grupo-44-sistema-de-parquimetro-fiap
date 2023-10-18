@@ -1,10 +1,11 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities;
 
 
-import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutor.entities.Condutor;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 @Entity
 @Table(name = "tb_veiculo")
 @Getter
@@ -12,6 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = "id")
+
 public class Veiculo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,5 +22,8 @@ public class Veiculo {
     private String modelo;
     private String matricula;
     private Long cavalos;
-    private Condutor condutor;
+    private Long idCondutor;
+
+    @OneToMany(mappedBy = "veiculo")
+    private List<Alocacao> alocacoes;
 }

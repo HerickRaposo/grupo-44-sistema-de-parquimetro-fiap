@@ -1,5 +1,6 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.services;
 
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto.VeiculoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities.Veiculo;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.repositories.IVeiculoRepository;
@@ -17,6 +18,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +30,9 @@ public class VeiculoService {
     private IVeiculoRepository repository;
 
     public Page<VeiculoDTO> findAll(VeiculoDTO filtro, PageRequest pagina) {
+
+        AlocacaoDTO alocacaoDTO;
+
 
         Specification<Veiculo> specification = Specification.where(null);
         if (!StringUtils.isEmpty(filtro.getMatricula())) {
@@ -46,21 +51,21 @@ public class VeiculoService {
         }
 
         var veiculos = repository.findAll(specification,pagina);
-        return veiculos.map(veiculo -> new VeiculoDTO(veiculo));
+        return veiculos.map(veiculo -> new VeiculoDTO(veiculo,veiculo.getAlocacoes()));
     }
 
     @Transactional(readOnly = true)
     public VeiculoDTO findById(Long id) {
         var veiculo = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Veiculo não encontrado"));
-        return new VeiculoDTO(veiculo);
+        return new VeiculoDTO(veiculo,veiculo.getAlocacoes());
     }
 
     @Transactional
     public VeiculoDTO save(VeiculoDTO dto) {
         Veiculo entity = new Veiculo();
         mapperDtoToEntity(dto,entity);
-        var eletroSaved = repository.save(entity);
-        return new VeiculoDTO(eletroSaved);
+        var veiculoSaved = repository.save(entity);
+        return new VeiculoDTO(veiculoSaved,veiculoSaved.getAlocacoes());
     }
 
     @Transactional
@@ -70,7 +75,7 @@ public class VeiculoService {
             mapperDtoToEntity(dto,buscaVeiculo);
             buscaVeiculo = repository.save(buscaVeiculo);
 
-            return new VeiculoDTO(buscaVeiculo);
+            return new VeiculoDTO(buscaVeiculo,buscaVeiculo.getAlocacoes());
         } catch (EntityNotFoundException e) {
             throw new EntityNotFoundException("Veiculo não encontrado, id:" + id);
         }
@@ -110,6 +115,7 @@ public class VeiculoService {
         entity.setModelo(dto.getModelo());
         entity.setMatricula(dto.getMatricula());
         entity.setCavalos(dto.getCavalos());
+        entity.setIdCondutor(dto.getIdCondutor());
     }
 
 }
