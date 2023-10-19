@@ -54,13 +54,11 @@ public class VeiculoService {
         return veiculos.map(veiculo -> new VeiculoDTO(veiculo,veiculo.getAlocacoes()));
     }
 
-    @Transactional(readOnly = true)
     public VeiculoDTO findById(Long id) {
         var veiculo = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Veiculo não encontrado"));
         return new VeiculoDTO(veiculo,veiculo.getAlocacoes());
     }
 
-    @Transactional
     public VeiculoDTO save(VeiculoDTO dto) {
         Veiculo entity = new Veiculo();
         mapperDtoToEntity(dto,entity);
@@ -68,7 +66,7 @@ public class VeiculoService {
         return new VeiculoDTO(veiculoSaved,veiculoSaved.getAlocacoes());
     }
 
-    @Transactional
+
     public VeiculoDTO update(Long id, VeiculoDTO dto) {
         try {
             Veiculo buscaVeiculo = repository.getOne(id);
@@ -81,7 +79,6 @@ public class VeiculoService {
         }
     }
 
-    @Transactional
     public VeiculoDTO updateVeiculoByFields(Long id, Map<String, Object> fields) {
         Veiculo existingVeiculo = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Veiculo não encontrada"));
         fields.forEach((key, value) -> {

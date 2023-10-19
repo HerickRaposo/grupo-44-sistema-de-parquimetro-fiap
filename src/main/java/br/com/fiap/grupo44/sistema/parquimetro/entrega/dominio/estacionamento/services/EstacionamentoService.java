@@ -76,13 +76,11 @@ public class EstacionamentoService {
 
     }
 
-    @Transactional(readOnly = true)
     public EstacionamentoDTO findById(Long id) {
         var estacionamento = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Estacionamento não encontrado"));
         return new EstacionamentoDTO(estacionamento,estacionamento.getListaAlocacao());
     }
 
-    @Transactional
     public EstacionamentoDTO save(EstacionamentoDTO dto) {
         Estacionamento entity = new Estacionamento();
         mapperDtoToEntity(dto,entity);
@@ -90,7 +88,6 @@ public class EstacionamentoService {
         return new EstacionamentoDTO(estacSaved,estacSaved.getListaAlocacao());
     }
 
-    @Transactional
     public EstacionamentoDTO update(Long id, EstacionamentoDTO dto) {
         try {
             Estacionamento buscaEstacionamento = repository.getOne(id);
@@ -103,7 +100,7 @@ public class EstacionamentoService {
         }
     }
 
-    @Transactional
+
     public EstacionamentoDTO updateEstacionamentoByFields(Long id, Map<String, Object> fields) {
         Estacionamento existingEstacionamento = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Estacionamento não encontrada"));
         fields.forEach((key, value) -> {

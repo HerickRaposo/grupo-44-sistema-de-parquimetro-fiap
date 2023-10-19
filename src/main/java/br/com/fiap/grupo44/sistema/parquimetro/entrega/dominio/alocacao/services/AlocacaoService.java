@@ -82,13 +82,11 @@ public class AlocacaoService {
         }
         return new RestDataReturnDTO(listaAlocacoesDTO, new Paginator(alocacoes.getNumber(), alocacoes.getTotalElements(), alocacoes.getTotalPages()));
     }
-    @Transactional(readOnly = true)
     public AlocacaoDTO findById(Long id) {
         var alocacao = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Alocacao não encontrada"));
         return new AlocacaoDTO(alocacao,alocacao.getVeiculo(),alocacao.getEstacionamento());
     }
 
-    @Transactional
     public AlocacaoDTO save(AlocacaoDTO dto) {
         Alocacao entity = new Alocacao();
         mapperDtoToEntity(dto,entity);
@@ -96,7 +94,6 @@ public class AlocacaoService {
         return new AlocacaoDTO(alocacaoSaved,alocacaoSaved.getVeiculo(),alocacaoSaved.getEstacionamento());
     }
 
-    @Transactional
     public AlocacaoDTO update(Long id, AlocacaoDTO dto) {
         try {
             Alocacao buscaAlocacao = repository.getOne(id);
@@ -109,7 +106,6 @@ public class AlocacaoService {
         }
     }
 
-    @Transactional
     public AlocacaoDTO updateAlocacaoByFields(Long id, Map<String, Object> fields) {
         Alocacao existingAlocacao = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Alocação não encontrada"));
         fields.forEach((key, value) -> {
