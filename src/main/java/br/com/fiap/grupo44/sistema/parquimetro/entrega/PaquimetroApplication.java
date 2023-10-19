@@ -1,4 +1,5 @@
-package br.com.mattec.grupo44.sistema.parquimetro.paquimetro;
+package br.com.fiap.grupo44.sistema.parquimetro.entrega;
+
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
