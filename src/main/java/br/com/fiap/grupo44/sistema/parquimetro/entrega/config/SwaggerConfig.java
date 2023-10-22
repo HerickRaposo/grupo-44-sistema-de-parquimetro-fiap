@@ -1,4 +1,4 @@
-package br.com.fiap.grupo44.entrega.config;
+package br.com.fiap.grupo44.sistema.parquimetro.entrega.config;
 
 import org.springframework.context.annotation.Configuration;
 

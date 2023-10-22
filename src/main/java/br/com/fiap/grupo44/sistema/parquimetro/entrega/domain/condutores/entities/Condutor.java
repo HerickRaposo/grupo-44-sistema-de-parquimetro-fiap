@@ -1,6 +1,7 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.domain.condutores.entities;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.domain.endereco.entities.Endereco;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
