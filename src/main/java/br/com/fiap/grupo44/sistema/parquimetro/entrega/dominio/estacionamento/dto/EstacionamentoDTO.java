@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class EstacionamentoDTO {
     @JsonProperty
-    private Integer id;
+    private Long id;
     @JsonProperty
     @NotNull(message = "Descrição não deve ser nulo")
     @NotBlank(message = "Descrição não deve ser vazio")

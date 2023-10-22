@@ -21,7 +21,7 @@ public class AlocacaoDTO {
     @JsonProperty
     private Long id;
     @JsonProperty
-    private Date dataentrada;
+    private Date dataEntrada;
     @JsonProperty
     private Date dataSaida;
     @JsonProperty
@@ -35,7 +35,7 @@ public class AlocacaoDTO {
 
     public AlocacaoDTO(Alocacao entity){
         this.id = entity.getId();
-        this.dataentrada = entity.getDataentrada();
+        this.dataEntrada = entity.getDataEntrada();
         this.dataSaida = entity.getDataSaida();
         this.dataInicioPago = entity.getDataInicioPago();
         this.dataFimPago = entity.getDataFimPago();

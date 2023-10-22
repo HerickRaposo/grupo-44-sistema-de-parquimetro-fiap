@@ -16,7 +16,7 @@ import java.util.List;
 public class Estacionamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String descricao;
     private Boolean estado;
 

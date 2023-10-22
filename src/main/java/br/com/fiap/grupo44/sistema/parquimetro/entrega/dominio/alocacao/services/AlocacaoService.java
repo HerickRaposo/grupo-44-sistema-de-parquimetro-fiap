@@ -36,7 +36,7 @@ public class AlocacaoService {
             Date dataIniPago = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataInicioPago);
             Date dtFimPago = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataFimPago);
             AlocacaoDTO filtro = new AlocacaoDTO();
-            filtro.setDataentrada(dtEntrada);
+            filtro.setDataEntrada(dtEntrada);
             filtro.setDataSaida(dtSaida);
             filtro.setDataInicioPago(dataIniPago);
             filtro.setDataFimPago(dtFimPago);
@@ -52,9 +52,9 @@ public class AlocacaoService {
 
 
         Specification<Alocacao> specification = Specification.where(null);
-        if (filtro.getDataentrada() != null) {
+        if (filtro.getDataEntrada() != null) {
             specification = specification.and((root, query, builder) ->
-                    builder.equal(root.get("data_entrada"), filtro.getDataentrada()));
+                    builder.equal(root.get("data_entrada"), filtro.getDataEntrada()));
         }
 
         if (filtro.getDataSaida() != null) {
@@ -135,7 +135,7 @@ public class AlocacaoService {
     }
 
     private void  mapperDtoToEntity(AlocacaoDTO dto, Alocacao entity){
-        entity.setDataentrada(dto.getDataentrada());
+        entity.setDataEntrada(dto.getDataEntrada());
         entity.setDataSaida(dto.getDataSaida());
         entity.setDataInicioPago(dto.getDataInicioPago());
         entity.setDataFimPago(dto.getDataFimPago());

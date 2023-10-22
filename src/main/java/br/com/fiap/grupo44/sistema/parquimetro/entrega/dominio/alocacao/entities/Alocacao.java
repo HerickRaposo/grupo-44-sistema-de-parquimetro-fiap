@@ -18,7 +18,7 @@ public class Alocacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date dataentrada;
+    private Date dataEntrada;
     private Date dataSaida;
     private Date dataInicioPago;
     private Date dataFimPago;
