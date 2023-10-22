@@ -1,6 +1,7 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.entities;
 
 
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.dto.FormaPagamentoDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,5 +20,11 @@ public class FormaPagamento {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String descricao;
-	private Boolean estado = true;
+	private Boolean estado=true;
+	
+	public FormaPagamento(FormaPagamentoDTO formaPagamentoDTO) {
+      this.setId(formaPagamentoDTO.getId());
+	  this.setDescricao(formaPagamentoDTO.getDescricao());
+      this.setEstado(formaPagamentoDTO.getEstado());
+	}
 }
