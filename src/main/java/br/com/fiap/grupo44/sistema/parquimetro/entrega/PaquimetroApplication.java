@@ -1,5 +1,6 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega;
 
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.SpringApplication;
