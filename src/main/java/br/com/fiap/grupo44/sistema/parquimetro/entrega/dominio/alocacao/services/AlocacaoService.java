@@ -3,9 +3,13 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.service
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.repositories.IAlocacaoRepository;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.EstacionamentoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.Paginator;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.RestDataReturnDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.repositories.IEstacionamentoRepository;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto.VeiculoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.repositories.IVeiculoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.exception.ControllerNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
@@ -28,18 +32,31 @@ import java.util.stream.Collectors;
 public class AlocacaoService {
     @Autowired
     private IAlocacaoRepository repository;
+    @Autowired
+    private IVeiculoRepository veiculoRepository;
+    @Autowired
+    private IEstacionamentoRepository estacRepository;
 
     public AlocacaoDTO retornaFiltroFormatado(String dataEntrada, String dataSaida, String dataInicioPago, String dataFimPago){
         try {
-            Date dtEntrada = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataEntrada);
-            Date dtSaida = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataSaida);
-            Date dataIniPago = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataInicioPago);
-            Date dtFimPago = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataFimPago);
             AlocacaoDTO filtro = new AlocacaoDTO();
-            filtro.setDataEntrada(dtEntrada);
-            filtro.setDataSaida(dtSaida);
-            filtro.setDataInicioPago(dataIniPago);
-            filtro.setDataFimPago(dtFimPago);
+            if (dataEntrada != null && !dataEntrada.isBlank()){
+                Date dtEntrada = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataEntrada);
+                filtro.setDataEntrada(dtEntrada);
+            }
+
+            if (dataSaida != null && !dataSaida.isBlank()){
+                Date dtSaida = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataSaida);
+                filtro.setDataSaida(dtSaida);
+            }
+            if (dataFimPago != null && !dataInicioPago.isBlank()){
+                Date dataIniPago = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataInicioPago);
+                filtro.setDataInicioPago(dataIniPago);
+            }
+            if (dataFimPago != null && !dataFimPago.isBlank()){
+                Date dtFimPago = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(dataFimPago);
+                filtro.setDataFimPago(dtFimPago);
+            }
             return filtro;
         } catch (Exception e) {
             throw new EntityNotFoundException(e.getMessage());
@@ -139,5 +156,7 @@ public class AlocacaoService {
         entity.setDataSaida(dto.getDataSaida());
         entity.setDataInicioPago(dto.getDataInicioPago());
         entity.setDataFimPago(dto.getDataFimPago());
+        entity.setVeiculo(veiculoRepository.getReferenceById(dto.getVeiculo().getId()));
+        entity.setEstacionamento(estacRepository.getReferenceById(dto.getEstacionamento().getId()));
     }
 }

@@ -3,6 +3,7 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities.Veiculo;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,6 +40,7 @@ public class VeiculoDTO {
     @NotNull(message = "Defina ao menos 1 condutor para o veiculo")
     private Long idCondutor;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<AlocacaoDTO> listaAlocacao;
 
     public VeiculoDTO(Veiculo entity){
@@ -46,12 +49,15 @@ public class VeiculoDTO {
         this.modelo = entity.getModelo();
         this.matricula = entity.getMatricula();
         this.cavalos = entity.getCavalos();
-        this.idCondutor = entity.getIdCondutor();
     }
 
     public VeiculoDTO(Veiculo entity, List<Alocacao> alocacoes){
         this(entity);
         if (alocacoes != null && alocacoes.size() > 0) {
+            if (this.listaAlocacao == null){
+                this.listaAlocacao = new ArrayList<>();
+            }
+
             for(Alocacao alocacao: alocacoes){
                 this.listaAlocacao.add(new AlocacaoDTO(alocacao));
             }

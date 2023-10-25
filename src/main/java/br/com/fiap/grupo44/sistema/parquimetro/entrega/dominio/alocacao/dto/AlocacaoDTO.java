@@ -5,6 +5,7 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dt
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto.VeiculoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities.Veiculo;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,9 +30,11 @@ public class AlocacaoDTO {
     @JsonProperty
     private Date dataFimPago;
     @JsonProperty
-    private VeiculoDTO veiculoDTO;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private VeiculoDTO veiculo;
     @JsonProperty
-    private EstacionamentoDTO estacionamentoDTO;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private EstacionamentoDTO estacionamento;
 
     public AlocacaoDTO(Alocacao entity){
         this.id = entity.getId();
@@ -43,7 +46,7 @@ public class AlocacaoDTO {
 
     public AlocacaoDTO(Alocacao entity, Veiculo veiculo, Estacionamento estacionamento){
         this(entity);
-        this.veiculoDTO  = new VeiculoDTO(veiculo);
-        this.estacionamentoDTO = new EstacionamentoDTO(estacionamento);
+        this.veiculo = new VeiculoDTO(veiculo);
+        this.estacionamento = new EstacionamentoDTO(estacionamento);
     }
 }
