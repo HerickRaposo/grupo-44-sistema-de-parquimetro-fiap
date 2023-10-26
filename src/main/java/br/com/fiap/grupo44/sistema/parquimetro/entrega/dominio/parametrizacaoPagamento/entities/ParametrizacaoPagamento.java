@@ -2,18 +2,12 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPa
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
-import org.springframework.data.annotation.Id;
 
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.entities.FormaPagamento;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,6 +28,9 @@ public class ParametrizacaoPagamento {
 	private FormaPagamento formaPagamento;
 	@Enumerated(EnumType.STRING)
 	private PeriodoEstacionamento periodoEstacionamento;
+
+	@OneToMany(mappedBy = "parametrizacao_pagamento")
+	private List<Alocacao> listaAlocacao;
 	
 	//@OneToMany(mappedBy = "parametrizacao")
 	//private List<EstacionamentoVeiculo> estacionamentoVeiculo = new ArrayList<>();

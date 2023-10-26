@@ -8,6 +8,7 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dt
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.RestDataReturnDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.repositories.IEstacionamentoRepository;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.repositories.IEParametrizacaoPagamentoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto.VeiculoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.repositories.IVeiculoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.exception.ControllerNotFoundException;
@@ -36,6 +37,8 @@ public class AlocacaoService {
     private IVeiculoRepository veiculoRepository;
     @Autowired
     private IEstacionamentoRepository estacRepository;
+    @Autowired
+    private IEParametrizacaoPagamentoRepository parametrizacaoPagtoRepository;
 
     public AlocacaoDTO retornaFiltroFormatado(String dataEntrada, String dataSaida, String dataInicioPago, String dataFimPago){
         try {
@@ -93,7 +96,7 @@ public class AlocacaoService {
         final Page<AlocacaoDTO> map = alocacoes.map(AlocacaoDTO::new);
 
         for (Alocacao alocacao : alocacoes.getContent()) {
-            alocacaoDTO = new AlocacaoDTO(alocacao,alocacao.getVeiculo(),alocacao.getEstacionamento());
+            alocacaoDTO = new AlocacaoDTO(alocacao,alocacao.getVeiculo(),alocacao.getEstacionamento(),alocacao.getParametrizacaoPagto());
             BeanUtils.copyProperties(alocacao, alocacaoDTO);
             listaAlocacoesDTO.add(alocacaoDTO);
         }
@@ -101,14 +104,14 @@ public class AlocacaoService {
     }
     public AlocacaoDTO findById(Long id) {
         var alocacao = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Alocacao não encontrada"));
-        return new AlocacaoDTO(alocacao,alocacao.getVeiculo(),alocacao.getEstacionamento());
+        return new AlocacaoDTO(alocacao,alocacao.getVeiculo(),alocacao.getEstacionamento(),alocacao.getParametrizacaoPagto());
     }
 
     public AlocacaoDTO save(AlocacaoDTO dto) {
         Alocacao entity = new Alocacao();
         mapperDtoToEntity(dto,entity);
         var alocacaoSaved = repository.save(entity);
-        return new AlocacaoDTO(alocacaoSaved,alocacaoSaved.getVeiculo(),alocacaoSaved.getEstacionamento());
+        return new AlocacaoDTO(alocacaoSaved,alocacaoSaved.getVeiculo(),alocacaoSaved.getEstacionamento(),alocacaoSaved.getParametrizacaoPagto());
     }
 
     public AlocacaoDTO update(Long id, AlocacaoDTO dto) {
@@ -117,7 +120,7 @@ public class AlocacaoService {
             mapperDtoToEntity(dto,buscaAlocacao);
             buscaAlocacao = repository.save(buscaAlocacao);
 
-            return new AlocacaoDTO(buscaAlocacao,buscaAlocacao.getVeiculo(),buscaAlocacao.getEstacionamento());
+            return new AlocacaoDTO(buscaAlocacao,buscaAlocacao.getVeiculo(),buscaAlocacao.getEstacionamento(),buscaAlocacao.getParametrizacaoPagto());
         } catch (EntityNotFoundException e) {
             throw new EntityNotFoundException("Estacionamento não encontrado, id:" + id);
         }
@@ -132,6 +135,59 @@ public class AlocacaoService {
         });
         var alocacao = repository.save(existingAlocacao);
         return new AlocacaoDTO(alocacao);
+    }
+
+    private void controlaTempoAlocacao(Long id){
+        var alocacaoDTO = findById(id);
+        //Estacionamento alocado para um veiculo
+        if (alocacaoDTO.getDataSaida() == null && alocacaoDTO.getEstacionamento().getEstado()){
+
+            //Pega hora atual
+            Calendar calAtual = Calendar.getInstance();
+            calAtual.set(Calendar.SECOND, 0);
+
+
+            if (alocacaoDTO.getParametrizacaoPagto().getPeriodoEstacionamento().FIXO){
+                Calendar calFim = Calendar.getInstance();
+                calFim.setTime(alocacaoDTO.getDataFimPago());
+                calFim.set(Calendar.SECOND, 0);
+
+                calFim.add(Calendar.MINUTE, -10);
+                Date dezMinAntes = calFim.getTime();
+                if ((calAtual.getTime() == dezMinAntes || calAtual.getTime().after(dezMinAntes)) && calAtual.getTime().before(alocacaoDTO.getDataFimPago())){
+                    //Calcula diferença entre periodo de tempo
+                    long diferencaEmMilissegundos = alocacaoDTO.getDataFimPago().getTime() - calAtual.getTimeInMillis();
+
+                    // Converte a diferença em milissegundos para horas e minutos
+                    long diferencaEmMinutos = diferencaEmMilissegundos / (60 * 1000);
+                    long horas = diferencaEmMinutos / 60;
+                    long minutos = diferencaEmMinutos % 60;
+
+                    System.out.println("Sua alocação expira em " + horas + ":" + "minutos");
+                    //Envia mensagem tempo fixo;
+                }
+            } else {
+                //Pega hora de entrada e zera segundos
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(alocacaoDTO.getDataEntrada());
+                cal.set(Calendar.SECOND, 0);
+
+                //Adiciona uma hora
+                cal.add(Calendar.HOUR_OF_DAY, 1);
+                Date umaHoraDepois = cal.getTime();
+
+                if (alocacaoDTO.getDataSaida() == null && (calAtual.getTime() == umaHoraDepois || calAtual.getTime().after(umaHoraDepois))){
+                    // criar alerta renovação por mais uma hora
+                }
+
+            }
+
+            Map<String,Object> mapaDtaVerificacao = new HashMap<>();
+            mapaDtaVerificacao.put("ultima_verificacao", calAtual.getTime());
+            updateAlocacaoByFields(alocacaoDTO.getId(), mapaDtaVerificacao);
+
+        }
+
     }
 
     public void delete(Long id) {
@@ -158,5 +214,6 @@ public class AlocacaoService {
         entity.setDataFimPago(dto.getDataFimPago());
         entity.setVeiculo(veiculoRepository.getReferenceById(dto.getVeiculo().getId()));
         entity.setEstacionamento(estacRepository.getReferenceById(dto.getEstacionamento().getId()));
+        entity.setParametrizacaoPagto(parametrizacaoPagtoRepository.getReferenceById(dto.getParametrizacaoPagto().getId()));
     }
 }

@@ -1,6 +1,7 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.entities.ParametrizacaoPagamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities.Veiculo;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,8 @@ public class Alocacao {
     private Date dataSaida;
     private Date dataInicioPago;
     private Date dataFimPago;
+    private Date ultimaVerificacao;
+
 
     @ManyToOne
     @JoinColumn(name = "veiculo_id")
@@ -30,4 +33,8 @@ public class Alocacao {
     @ManyToOne
     @JoinColumn(name = "estacionamento_id")
     private Estacionamento estacionamento;
+
+    @ManyToOne
+    @JoinColumn(name = "PARAMETRIZACAO_PAGAMENTO_ID")
+    private ParametrizacaoPagamento parametrizacaoPagto;
 }

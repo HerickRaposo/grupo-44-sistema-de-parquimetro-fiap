@@ -1,5 +1,4 @@
-package br.com.fiap.grupo44.sistema.parquimetro.entrega;
-
+package br.com.fiap.grupo44.sistema.parquimetro.paquimetro;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,3 +11,4 @@ class PaquimetroApplicationTests {
 	}
 
 }
+
