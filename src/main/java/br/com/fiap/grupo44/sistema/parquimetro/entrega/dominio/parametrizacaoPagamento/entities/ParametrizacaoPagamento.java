@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.springframework.data.annotation.Id;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.entities.FormaPagamento;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.dto.ParametrizacaoPagamentoDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -37,4 +38,15 @@ public class ParametrizacaoPagamento {
 	
 	//@OneToMany(mappedBy = "parametrizacao")
 	//private List<EstacionamentoVeiculo> estacionamentoVeiculo = new ArrayList<>();
+	
+	public ParametrizacaoPagamento() {
+		
+	}
+	
+	public ParametrizacaoPagamento(ParametrizacaoPagamentoDTO parametrizacaoPagamentoDTO) {
+		this.id=parametrizacaoPagamentoDTO.getId();
+		this.valorPorHora=parametrizacaoPagamentoDTO.getValorPorHora();
+		this.formaPagamento=new FormaPagamento(parametrizacaoPagamentoDTO.getFormaPagamento());
+		this.periodoEstacionamento=parametrizacaoPagamentoDTO.getPeriodoEstacionamento();
+	}
 }

@@ -1,4 +1,4 @@
-package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto;
+package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.dto;
 
 public class Paginator {
 	private Integer pageNumber;
