@@ -8,6 +8,7 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dt
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.RestDataReturnDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.repositories.IEstacionamentoRepository;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.entities.PeriodoEstacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.repositories.IEParametrizacaoPagamentoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto.VeiculoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.repositories.IVeiculoRepository;
@@ -137,7 +138,7 @@ public class AlocacaoService {
         return new AlocacaoDTO(alocacao);
     }
 
-    private void controlaTempoAlocacao(Long id){
+    public void controlaTempoAlocacao(Long id){
         var alocacaoDTO = findById(id);
         //Estacionamento alocado para um veiculo
         if (alocacaoDTO.getDataSaida() == null && alocacaoDTO.getEstacionamento().getEstado()){
@@ -147,7 +148,7 @@ public class AlocacaoService {
             calAtual.set(Calendar.SECOND, 0);
 
 
-            if (alocacaoDTO.getParametrizacaoPagto().getPeriodoEstacionamento().FIXO){
+            if (alocacaoDTO.getParametrizacaoPagto().getPeriodoEstacionamento().getCodigo().equals(PeriodoEstacionamento.FIXO.getCodigo())){
                 Calendar calFim = Calendar.getInstance();
                 calFim.setTime(alocacaoDTO.getDataFimPago());
                 calFim.set(Calendar.SECOND, 0);

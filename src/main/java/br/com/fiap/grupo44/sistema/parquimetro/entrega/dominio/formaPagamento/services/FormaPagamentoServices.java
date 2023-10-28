@@ -7,9 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.Paginator;
-import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.RestDataReturnDTO;
+
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.dto.FormaPagamentoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.dto.RestDataReturnDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.dto.Paginator;
+
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.entities.FormaPagamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.repositories.IEFormaPagamentoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.exception.ControllerNotFoundException;
@@ -27,19 +29,18 @@ public class FormaPagamentoServices {
 	}
 
 	public FormaPagamentoDTO findById(Long id) {
-		FormaPagamento formaPagamento = this.ieFormaPagamentoRepository.findById(id)
-				.orElseThrow(() -> new ControllerNotFoundException("Endereço não encontrado"));
+		FormaPagamento formaPagamento = this.ieFormaPagamentoRepository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Endereço não encontrado"));
 		return new FormaPagamentoDTO(formaPagamento);
 	}
 
+	
 	public RestDataReturnDTO findAll(PageRequest pageRequest) {
 		Page<FormaPagamento> formaPagamento = this.ieFormaPagamentoRepository.findAll(pageRequest);
 		if (formaPagamento.isEmpty()) {
 			throw new ControllerNotFoundException("Nenhum Endereço para listar na pagina especificada.");
 		}
 
-		return new RestDataReturnDTO(formaPagamento, new Paginator(formaPagamento.getNumber(),
-				formaPagamento.getTotalElements(), formaPagamento.getTotalPages()));
+		return new RestDataReturnDTO(formaPagamento, new Paginator(formaPagamento.getNumber(),formaPagamento.getTotalElements(), formaPagamento.getTotalPages()));
 	}
 
 	public FormaPagamentoDTO atualizar(FormaPagamentoDTO enderecoDTO, Long id) {
@@ -65,5 +66,4 @@ public class FormaPagamentoServices {
 		}
 		throw new ControllerNotFoundException("Forma de pagamento não encontrada, id: " + id);
 	}
-
 }

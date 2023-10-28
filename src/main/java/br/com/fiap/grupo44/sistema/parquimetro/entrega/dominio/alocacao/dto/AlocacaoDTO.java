@@ -52,12 +52,13 @@ public class AlocacaoDTO {
         this.dataSaida = entity.getDataSaida();
         this.dataInicioPago = entity.getDataInicioPago();
         this.dataFimPago = entity.getDataFimPago();
-        this.ultimaVerificacao = entity.getUltimaVerificacao()
+        this.ultimaVerificacao = entity.getUltimaVerificacao();
     }
 
-    public AlocacaoDTO(Alocacao entity, Veiculo veiculo, Estacionamento estacionamento, ParametrizacaoPagamento parametrizacaoPagto){
+    public AlocacaoDTO(Alocacao entity, Veiculo veiculo, Estacionamento estacionamento, ParametrizacaoPagamento parametrizacaoPagto) {
         this(entity);
         this.veiculo = new VeiculoDTO(veiculo);
         this.estacionamento = new EstacionamentoDTO(estacionamento);
-        this.parametrizacaoPagto new ParametrizacaoPagamentoDTO(parametrizacaoPagto);
+        this.parametrizacaoPagto = new ParametrizacaoPagamentoDTO(parametrizacaoPagto);
+    }
 }
