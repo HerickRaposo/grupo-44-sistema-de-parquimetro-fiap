@@ -55,7 +55,7 @@ public class AlocacaoController {
         var alocacao = alocacaoService.findById(id);
         return ResponseEntity.ok(alocacao);
     }
-@Operation(summary = "Controle de tempo de alocação por id",method = "GET")
+    @Operation(summary = "Controle de tempo de alocação por id",method = "GET")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book"),
             @ApiResponse(responseCode = "400", description = "Bad request"),

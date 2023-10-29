@@ -1,7 +1,13 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.services;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,18 +25,12 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.exception.ControllerNotFo
 public class ParametrizacaoPagamentoService {
 	private IEParametrizacaoPagamentoRepository iEParametrizacaoPagamentoRepository;
 	
-	public ParametrizacaoPagamentoDTO salvar(ParametrizacaoPagamentoDTO parametrizacaoPagamentoDTO) {
-		ParametrizacaoPagamento parametrizacaoPagamento      = new ParametrizacaoPagamento(parametrizacaoPagamentoDTO);
+	public ParametrizacaoPagamentoDTO save(ParametrizacaoPagamentoDTO parametrizacaoPagamentoDTO) {
+		ParametrizacaoPagamento parametrizacaoPagamento  = new ParametrizacaoPagamento(parametrizacaoPagamentoDTO);
 		ParametrizacaoPagamento parametrizacaoPagamentoSalvo = this.iEParametrizacaoPagamentoRepository.save(parametrizacaoPagamento);
 		return new ParametrizacaoPagamentoDTO(parametrizacaoPagamentoSalvo);
 	}
 
-	public ParametrizacaoPagamentoDTO findById(Long id) {
-		ParametrizacaoPagamento parametrizacaoPagamento = this.iEParametrizacaoPagamentoRepository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Endereço não encontrado"));
-		return new ParametrizacaoPagamentoDTO(parametrizacaoPagamento);
-	}
-
-	
 	public RestDataReturnDTO findAll(PageRequest pageRequest) {
 		Page<ParametrizacaoPagamento> parametrizacaoPagamento = this.iEParametrizacaoPagamentoRepository.findAll(pageRequest);
 		if (parametrizacaoPagamento.isEmpty()) {
@@ -40,7 +40,11 @@ public class ParametrizacaoPagamentoService {
 		return new RestDataReturnDTO(parametrizacaoPagamento, new Paginator(parametrizacaoPagamento.getNumber(),parametrizacaoPagamento.getTotalElements(), parametrizacaoPagamento.getTotalPages()));
 	}
 
-	public ParametrizacaoPagamentoDTO atualizar(ParametrizacaoPagamentoDTO parametrizacaoPagamentoDTO, Long id) {
+	public ParametrizacaoPagamentoDTO findById(Long id) {
+		ParametrizacaoPagamento parametrizacaoPagamento = this.iEParametrizacaoPagamentoRepository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Endereço não encontrado"));
+		return new ParametrizacaoPagamentoDTO(parametrizacaoPagamento);
+	}
+	public ParametrizacaoPagamentoDTO update(ParametrizacaoPagamentoDTO parametrizacaoPagamentoDTO, Long id) {
 		Optional<ParametrizacaoPagamento> OParametrizacaoPagamento = this.iEParametrizacaoPagamentoRepository.findById(id);
 
 		try {
@@ -50,19 +54,16 @@ public class ParametrizacaoPagamentoService {
 			parametrizacaoPagamento.setFormaPagamento(new FormaPagamento(parametrizacaoPagamentoDTO.getFormaPagamento()));
 			parametrizacaoPagamento.setPeriodoEstacionamento(parametrizacaoPagamentoDTO.getPeriodoEstacionamento());
 			parametrizacaoPagamento.setValorPorHora(parametrizacaoPagamentoDTO.getValorPorHora());
-			
-			
+
 			this.iEParametrizacaoPagamentoRepository.save(parametrizacaoPagamento);
-			
 			new ParametrizacaoPagamentoDTO(parametrizacaoPagamento);
-			
 			return new ParametrizacaoPagamentoDTO(parametrizacaoPagamento);
 		} catch (Exception e) {
 			throw new ControllerNotFoundException("Forma de pagamento não encontrada, id: " + id);
 		}
 	}
 
-	public String apagar(Long id) {
+	public String delete(Long id) {
 		Optional<ParametrizacaoPagamento> OParametrizacaoPagamento = this.iEParametrizacaoPagamentoRepository.findById(id);
 		if (OParametrizacaoPagamento.isPresent()) {
 			ParametrizacaoPagamento parametrizacaoPagamento = OParametrizacaoPagamento.get();
@@ -71,5 +72,14 @@ public class ParametrizacaoPagamentoService {
 		}
 		throw new ControllerNotFoundException("Forma de pagamento não encontrada, id: " + id);
 	}
+
+	public List<String> validate(ParametrizacaoPagamentoDTO dto){
+		Set<ConstraintViolation<ParametrizacaoPagamentoDTO>> violacoes = Validation.buildDefaultValidatorFactory().getValidator().validate(dto);
+		List<String> violacoesToList = violacoes.stream()
+				.map((violacao) -> violacao.getPropertyPath() + ":" + violacao.getMessage())
+				.collect(Collectors.toList());
+		return violacoesToList;
+	}
+
 
 }
