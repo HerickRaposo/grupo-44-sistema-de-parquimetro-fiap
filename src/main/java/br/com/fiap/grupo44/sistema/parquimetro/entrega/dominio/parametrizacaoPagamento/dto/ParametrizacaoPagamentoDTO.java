@@ -3,6 +3,8 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPa
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.dto.FormaPagamentoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.entities.FormaPagamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.entities.ParametrizacaoPagamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.entities.PeriodoEstacionamento;
 import jakarta.persistence.EnumType;
@@ -20,15 +22,22 @@ public class ParametrizacaoPagamentoDTO {
 	private Long id;
 	private LocalDate data;
 	private BigDecimal valorPorHora;
-	private Long formaPagamento;
+	private FormaPagamentoDTO formaPagamentoDTO;
 	@Enumerated(EnumType.STRING)
 	private PeriodoEstacionamento periodoEstacionamento;
 	
-	public ParametrizacaoPagamentoDTO(ParametrizacaoPagamento parametrizacaoPagamentoSalvo) {
-	   this.data=parametrizacaoPagamentoSalvo.getData();
-	   this.formaPagamento=parametrizacaoPagamentoSalvo.getFormaPagamento().getId();
-	   this.id=parametrizacaoPagamentoSalvo.getId();
-	   this.periodoEstacionamento=parametrizacaoPagamentoSalvo.getPeriodoEstacionamento();
-	   this.valorPorHora=parametrizacaoPagamentoSalvo.getValorPorHora();
+	public ParametrizacaoPagamentoDTO(ParametrizacaoPagamento entity) {
+	   this.data = entity.getData();
+	   this.id = entity.getId();
+	   this.periodoEstacionamento = entity.getPeriodoEstacionamento();
+	   this.valorPorHora = entity.getValorPorHora();
+	}
+	public ParametrizacaoPagamentoDTO(ParametrizacaoPagamento entity, FormaPagamento formaPagamento){
+		this(entity);
+		if (formaPagamento == null) {
+			this.formaPagamentoDTO = new FormaPagamentoDTO();
+		} else {
+			this.formaPagamentoDTO = new FormaPagamentoDTO(formaPagamento);
+		}
 	}
 }

@@ -61,12 +61,11 @@ public class AlocacaoController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "404", description = "Person not found"),
             @ApiResponse(responseCode = "500", description = "Erro no seervio")})
-    @GetMapping("/{id}")
+    @GetMapping("/controle_tempo_alocacao/{id}")
     public ResponseEntity<String> controlaTempoAlocacao(@PathVariable Long id) {
         alocacaoService.controlaTempoAlocacao(id);
         return ResponseEntity.ok("Controle realizado");
     }
-
     @Operation(summary = "Insere alocação",method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book"),

@@ -1,4 +1,5 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.adapter.out.email.services;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailSenderService {
+
 
     private JavaMailSender javaMailSender;
 

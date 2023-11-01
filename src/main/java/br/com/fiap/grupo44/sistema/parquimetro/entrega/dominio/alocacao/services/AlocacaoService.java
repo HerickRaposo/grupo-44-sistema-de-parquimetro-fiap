@@ -1,5 +1,6 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.services;
 
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.adapter.out.email.services.EmailSenderService;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.repositories.IAlocacaoRepository;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AlocacaoService {
+    @Autowired
+    private EmailSenderService emailService;
     @Autowired
     private IAlocacaoRepository repository;
     @Autowired
@@ -148,7 +151,7 @@ public class AlocacaoService {
             calAtual.set(Calendar.SECOND, 0);
 
 
-            if (alocacaoDTO.getParametrizacaoPagto().getPeriodoEstacionamento().getCodigo().equals(PeriodoEstacionamento.FIXO.getCodigo())){
+            if (alocacaoDTO.getParametrizacaoPagto().getPeriodoEstacionamento().equals(PeriodoEstacionamento.FIXO)){
                 Calendar calFim = Calendar.getInstance();
                 calFim.setTime(alocacaoDTO.getDataFimPago());
                 calFim.set(Calendar.SECOND, 0);

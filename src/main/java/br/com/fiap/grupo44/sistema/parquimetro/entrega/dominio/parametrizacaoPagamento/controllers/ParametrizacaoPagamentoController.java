@@ -7,6 +7,7 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPag
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,16 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 
+@RestController
+@RequestMapping(value = "/parametrizacaoPagto",produces = {"application/json"})
+@Tag(name = "API DE PARAMETRIZAÇÃO DE PAGAMENTO")
 public class ParametrizacaoPagamentoController {
     @Autowired
     private ParametrizacaoPagamentoService paramPagtoService;
-    @Operation(summary = "Retorna lista de alocacoes paginada podendo ser filtrada por marca,modelo,matriculaa",method = "GET")
+    @Operation(summary = "Retorna lista de parametros de pagamento",method = "GET")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -34,7 +39,7 @@ public class ParametrizacaoPagamentoController {
         PageRequest pageRequest = PageRequest.of(pagina, tamanho);
         return  paramPagtoService.findAll(pageRequest);
     }
-    @Operation(summary = "Consulta alocação por id",method = "GET")
+    @Operation(summary = "Consulta parametros de pagamento  por id",method = "GET")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -45,7 +50,7 @@ public class ParametrizacaoPagamentoController {
         var paramPagto = paramPagtoService.findById(id);
         return ResponseEntity.ok(paramPagto);
     }
-    @Operation(summary = "Insere alocação",method = "POST")
+    @Operation(summary = "Insere parametros de pagamento",method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -62,7 +67,7 @@ public class ParametrizacaoPagamentoController {
         return ResponseEntity.created(uri).body(paramPagtoSaved);
     }
 
-    @Operation(summary = "Atualiza alocação",method = "PUT")
+    @Operation(summary = "Atualiza parametros de pagamento",method = "PUT")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -74,18 +79,18 @@ public class ParametrizacaoPagamentoController {
         if (!violacoesToList.isEmpty()) {
             return ResponseEntity.badRequest().body(violacoesToList);
         }
-        var paramUpdated = paramPagtoService.update(paramPagtoDTO, id);
+        var paramUpdated = paramPagtoService.update(id,paramPagtoDTO);
         return  ResponseEntity.ok(paramUpdated);
     }
-    @Operation(summary = "Atualiza atributo especifico da alocação",method = "PATCH")
+    @Operation(summary = "Atualiza atributo especifico do  pagamento",method = "PATCH")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "404", description = "Person not found"),
             @ApiResponse(responseCode = "500", description = "Erro no seervio")})
     @PatchMapping("/{id}")
-    public ParametrizacaoPagamentoDTO updateveiculoFiedls(@PathVariable Long id, @RequestBody ParametrizacaoPagamentoDTO parametrizacaoPagamentoDTO){
-        return paramPagtoService.update(parametrizacaoPagamentoDTO,id);
+    public ParametrizacaoPagamentoDTO updateveiculoFiedls(@PathVariable Long id, @RequestBody Map<String, Object> fields){
+        return paramPagtoService.updateParametrizacaoPagtoByFields(id,fields);
     }
     @Operation(summary = "Deleta alocação",method = "DELETE")
     @ApiResponses(value = {
