@@ -6,6 +6,7 @@ import java.util.List;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.entities.Condutor;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.dto.EnderecoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto.VeiculoDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -41,7 +42,9 @@ public class CondutorDTO {
     private String nat;
     @Null(message = "O valor do somatorio deve ser calculado automaticamente")
     private Double somatorioCustoMensal;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<EnderecoDTO> enderecos = new ArrayList<>();
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<VeiculoDTO> veiculos = new ArrayList<>();
 
     public CondutorDTO(Condutor entidade) {

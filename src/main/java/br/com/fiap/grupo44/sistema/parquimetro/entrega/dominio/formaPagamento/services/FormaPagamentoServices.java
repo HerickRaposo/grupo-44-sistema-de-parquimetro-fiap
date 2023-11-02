@@ -30,74 +30,60 @@ import org.springframework.util.ReflectionUtils;
 public class FormaPagamentoServices {
 
     @Autowired
-    private IEFormaPagamentoRepository repository;
+    private IEFormaPagamentoRepository ieFormaPagamentoRepository;
+
+    public FormaPagamentoDTO save(FormaPagamentoDTO formaPagamentoDTO) {
+        FormaPagamento formaPagamento = new FormaPagamento(formaPagamentoDTO);
+        FormaPagamento formaPagamentoSalva = this.ieFormaPagamentoRepository.save(formaPagamento);
+        return new FormaPagamentoDTO(formaPagamentoSalva);
+    }
+
+    public FormaPagamentoDTO findById(Long id) {
+        FormaPagamento formaPagamento = this.ieFormaPagamentoRepository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Endereço não encontrado"));
+        return new FormaPagamentoDTO(formaPagamento);
+    }
+
 
     public RestDataReturnDTO findAll(PageRequest pageRequest) {
-        Page<FormaPagamento> formaPagamento = this.repository.findAll(pageRequest);
+        Page<FormaPagamento> formaPagamento = this.ieFormaPagamentoRepository.findAll(pageRequest);
         if (formaPagamento.isEmpty()) {
             throw new ControllerNotFoundException("Nenhum Endereço para listar na pagina especificada.");
         }
 
-        return new RestDataReturnDTO(formaPagamento, new Paginator(formaPagamento.getNumber(), formaPagamento.getTotalElements(), formaPagamento.getTotalPages()));
+        return new RestDataReturnDTO(formaPagamento, new Paginator(formaPagamento.getNumber(),formaPagamento.getTotalElements(), formaPagamento.getTotalPages()));
     }
 
-    public FormaPagamentoDTO findById(Long id) {
-        FormaPagamento formaPagamento = this.repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Endereço não encontrado"));
-        return new FormaPagamentoDTO(formaPagamento);
-    }
+    public FormaPagamentoDTO update(Long id,FormaPagamentoDTO enderecoDTO) {
+        Optional<FormaPagamento> OFormaPagamento = this.ieFormaPagamentoRepository.findById(id);
 
-    public FormaPagamentoDTO save(FormaPagamentoDTO dto) {
-        FormaPagamento entity = new FormaPagamento();
-        mapperDtoToEntity(dto, entity);
-        var formaPagtoSaved = repository.save(entity);
-        return new FormaPagamentoDTO(formaPagtoSaved);
-    }
-
-    public FormaPagamentoDTO update(Long id, FormaPagamentoDTO dto) {
         try {
-            FormaPagamento entity = repository.getOne(id);
-            mapperDtoToEntity(dto, entity);
-            entity = repository.save(entity);
-
-            return new FormaPagamentoDTO(entity);
-        } catch (EntityNotFoundException e) {
-            throw new EntityNotFoundException("Forma pagamento  não encontrado, id:" + id);
+            FormaPagamento formaPagamento = OFormaPagamento.get();
+            formaPagamento.setDescricao(enderecoDTO.getDescricao());
+            formaPagamento.setEstado(enderecoDTO.getEstado());
+            this.ieFormaPagamentoRepository.save(formaPagamento);
+            return new FormaPagamentoDTO(formaPagamento);
+        } catch (Exception e) {
+            throw new ControllerNotFoundException("Forma de pagamento não encontrada, id: " + id);
         }
     }
-
     public FormaPagamentoDTO updateFormaPagtoByFields(Long id, Map<String, Object> fields) {
-        FormaPagamento existingFormaPagto = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Veiculo não encontrada"));
+        FormaPagamento existingFormaPagto = ieFormaPagamentoRepository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Veiculo não encontrada"));
         fields.forEach((key, value) -> {
             Field field = ReflectionUtils.findField(Veiculo.class, key);
             field.setAccessible(true);
             ReflectionUtils.setField(field, existingFormaPagto, value);
         });
-        var formaPagtoAtualizado = repository.save(existingFormaPagto);
+        var formaPagtoAtualizado = ieFormaPagamentoRepository.save(existingFormaPagto);
         return new FormaPagamentoDTO(formaPagtoAtualizado);
     }
 
-
     public String delete(Long id) {
-        Optional<FormaPagamento> OFormaPagamento = this.repository.findById(id);
+        Optional<FormaPagamento> OFormaPagamento = this.ieFormaPagamentoRepository.findById(id);
         if (OFormaPagamento.isPresent()) {
             FormaPagamento formaPagamento = OFormaPagamento.get();
-            this.repository.delete(formaPagamento);
+            this.ieFormaPagamentoRepository.delete(formaPagamento);
             return "Removida Forma de pagamentpo de ID: " + id;
         }
         throw new ControllerNotFoundException("Forma de pagamento não encontrada, id: " + id);
     }
-
-    public List<String> validate(FormaPagamentoDTO dto) {
-        Set<ConstraintViolation<FormaPagamentoDTO>> violacoes = Validation.buildDefaultValidatorFactory().getValidator().validate(dto);
-        List<String> violacoesToList = violacoes.stream()
-                .map((violacao) -> violacao.getPropertyPath() + ":" + violacao.getMessage())
-                .collect(Collectors.toList());
-        return violacoesToList;
-    }
-
-    private void mapperDtoToEntity(FormaPagamentoDTO dto, FormaPagamento entity) {
-        entity.setDescricao(dto.getDescricao());
-        entity.setEstado(dto.getEstado());
-    }
-
 }

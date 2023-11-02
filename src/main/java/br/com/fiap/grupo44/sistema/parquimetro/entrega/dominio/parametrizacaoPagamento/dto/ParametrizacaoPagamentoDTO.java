@@ -22,7 +22,7 @@ public class ParametrizacaoPagamentoDTO {
 	private Long id;
 	private LocalDate data;
 	private BigDecimal valorPorHora;
-	private FormaPagamentoDTO formaPagamentoDTO;
+	private FormaPagamentoDTO formaPagamento;
 	@Enumerated(EnumType.STRING)
 	private PeriodoEstacionamento periodoEstacionamento;
 	
@@ -35,9 +35,9 @@ public class ParametrizacaoPagamentoDTO {
 	public ParametrizacaoPagamentoDTO(ParametrizacaoPagamento entity, FormaPagamento formaPagamento){
 		this(entity);
 		if (formaPagamento == null) {
-			this.formaPagamentoDTO = new FormaPagamentoDTO();
+			this.formaPagamento = new FormaPagamentoDTO();
 		} else {
-			this.formaPagamentoDTO = new FormaPagamentoDTO(formaPagamento);
+			this.formaPagamento = new FormaPagamentoDTO(formaPagamento);
 		}
 	}
 }

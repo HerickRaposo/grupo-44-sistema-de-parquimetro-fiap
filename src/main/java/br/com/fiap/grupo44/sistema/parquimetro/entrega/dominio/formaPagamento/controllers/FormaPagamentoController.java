@@ -56,10 +56,6 @@ public class FormaPagamentoController {
             @ApiResponse(responseCode = "500", description = "Erro no seervio")})
     @PostMapping
     public ResponseEntity save(@RequestBody FormaPagamentoDTO formaPagtoDTO) {
-        List<String> violacoesToList = formaPagtoService.validate(formaPagtoDTO);
-        if (!violacoesToList.isEmpty()) {
-            return ResponseEntity.badRequest().body(violacoesToList);
-        }
         var formaPagtoSaved = formaPagtoService.save(formaPagtoDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand((formaPagtoSaved.getId())).toUri();
         return ResponseEntity.created(uri).body(formaPagtoSaved);
@@ -73,10 +69,6 @@ public class FormaPagamentoController {
             @ApiResponse(responseCode = "500", description = "Erro no seervio")})
     @PutMapping("/{id}")
     public ResponseEntity update(@RequestBody FormaPagamentoDTO formaPagtoDTO, @PathVariable Long id) {
-        List<String> violacoesToList = formaPagtoService.validate(formaPagtoDTO);
-        if (!violacoesToList.isEmpty()) {
-            return ResponseEntity.badRequest().body(violacoesToList);
-        }
         var paramUpdated = formaPagtoService.update(id,formaPagtoDTO);
         return  ResponseEntity.ok(paramUpdated);
     }

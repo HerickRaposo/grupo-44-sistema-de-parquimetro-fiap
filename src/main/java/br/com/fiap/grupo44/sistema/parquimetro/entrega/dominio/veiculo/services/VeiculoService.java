@@ -1,6 +1,9 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.services;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.dto.CondutorDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.entities.Condutor;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.sevices.CondutorService;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto.VeiculoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities.Veiculo;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.repositories.IVeiculoRepository;
@@ -8,6 +11,7 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.exception.ControllerNotFo
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +32,9 @@ import java.util.stream.Collectors;
 public class VeiculoService {
     @Autowired
     private IVeiculoRepository repository;
+
+    @Autowired
+    private CondutorService condutorService;
 
     public Page<VeiculoDTO> findAll(VeiculoDTO filtro, PageRequest pagina) {
 
@@ -62,6 +69,13 @@ public class VeiculoService {
     public VeiculoDTO save(VeiculoDTO dto) {
         Veiculo entity = new Veiculo();
         mapperDtoToEntity(dto,entity);
+        if (dto.getCondutor() != null){
+            CondutorDTO condutorDTO = condutorService.findById(dto.getCondutor().getId());
+            Condutor condutor = new Condutor();
+            BeanUtils.copyProperties(condutorDTO, condutor);
+            entity.setCondutor(condutor);
+        }
+
         var veiculoSaved = repository.save(entity);
         return new VeiculoDTO(veiculoSaved,veiculoSaved.getCondutor(),veiculoSaved.getAlocacoes());
     }

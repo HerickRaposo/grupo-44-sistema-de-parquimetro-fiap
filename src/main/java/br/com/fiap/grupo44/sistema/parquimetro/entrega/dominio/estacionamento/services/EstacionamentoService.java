@@ -47,7 +47,7 @@ public class EstacionamentoService {
 
         if (!StringUtils.isEmpty(filtro.getEstado())) {
             specification = specification.and((root, query, builder) ->
-                    builder.like(builder.lower(root.get("estado")), "%" + filtro.getEstado().toString() + "%"));
+                    builder.equal(root.get("estado"), filtro.getEstado()));
         }
         EstacionamentoDTO estacionamentoDTO=null;
         var estacionamentos = repository.findAll(specification,pagina);

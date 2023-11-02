@@ -24,4 +24,10 @@ public class FormaPagamento {
 	private Long id;
 	private String descricao;
 	private Boolean estado = true;
+
+	public FormaPagamento(FormaPagamentoDTO formaPagamentoDTO) {
+		this.setId(formaPagamentoDTO.getId());
+		this.setDescricao(formaPagamentoDTO.getDescricao());
+		this.setEstado(formaPagamentoDTO.getEstado());
+	}
 }

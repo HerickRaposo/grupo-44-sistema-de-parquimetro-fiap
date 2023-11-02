@@ -40,7 +40,9 @@ public class EstacionamentoController {
         PageRequest pageRequest = PageRequest.of(pagina, tamanho);
         EstacionamentoDTO filtro = new EstacionamentoDTO();
         filtro.setDescricao(descricao);
-        filtro.setEstado("true".equals(estado));
+        if (filtro.getEstado() != null){
+            filtro.setEstado("true".equals(estado));
+        }
 
         return  estacionamentoService.findAll(filtro,pageRequest);
     }

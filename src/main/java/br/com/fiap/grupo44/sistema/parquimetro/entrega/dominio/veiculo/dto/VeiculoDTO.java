@@ -40,6 +40,7 @@ public class VeiculoDTO {
     private Long cavalos;
     @JsonProperty
     @NotNull(message = "Defina ao menos 1 condutor para o veiculo")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private CondutorDTO condutor;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

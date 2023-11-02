@@ -7,10 +7,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.dto.FormaPagamentoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.entities.FormaPagamento;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.formaPagamento.services.FormaPagamentoServices;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.entities.PeriodoEstacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities.Veiculo;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +34,9 @@ public class ParametrizacaoPagamentoService {
 	@Autowired
 	private IEParametrizacaoPagamentoRepository repository;
 
+	@Autowired
+	private FormaPagamentoServices formaPagtoService;
+
 	public RestDataReturnDTO findAll(PageRequest pageRequest) {
 		Page<ParametrizacaoPagamento> parametrizacaoPagamento = this.repository.findAll(pageRequest);
 		if (parametrizacaoPagamento.isEmpty()) {
@@ -46,6 +54,15 @@ public class ParametrizacaoPagamentoService {
 	public ParametrizacaoPagamentoDTO save(ParametrizacaoPagamentoDTO dto) {
 		ParametrizacaoPagamento entity = new ParametrizacaoPagamento();
 		mapperDtoToEntity(dto,entity);
+		if (dto.getFormaPagamento() != null){
+			FormaPagamentoDTO fPagtoDTO = formaPagtoService.findById(dto.getFormaPagamento().getId());
+			FormaPagamento formaPagto = new FormaPagamento();
+			BeanUtils.copyProperties(fPagtoDTO, formaPagto);
+			if (formaPagto.getDescricao().equalsIgnoreCase("pix") && entity.getPeriodoEstacionamento().equals(PeriodoEstacionamento.POR_HORA)){
+				throw new ControllerNotFoundException("Opção pix limitada a tempo fixo.");
+			}
+			entity.setFormaPagamento(formaPagto);
+		}
 		var paramSaved = repository.save(entity);
 		return new ParametrizacaoPagamentoDTO(paramSaved,paramSaved.getFormaPagamento());
 	}
@@ -95,5 +112,6 @@ public class ParametrizacaoPagamentoService {
 	private void  mapperDtoToEntity(ParametrizacaoPagamentoDTO dto, ParametrizacaoPagamento entity){
 		entity.setData(dto.getData());
 		entity.setValorPorHora(dto.getValorPorHora());
+		entity.setPeriodoEstacionamento(dto.getPeriodoEstacionamento());
 	}
 }

@@ -30,4 +30,5 @@ public class ParametrizacaoPagamento {
 	private FormaPagamento formaPagamento;
 	@Enumerated(EnumType.STRING)
 	private PeriodoEstacionamento periodoEstacionamento;
+
 }

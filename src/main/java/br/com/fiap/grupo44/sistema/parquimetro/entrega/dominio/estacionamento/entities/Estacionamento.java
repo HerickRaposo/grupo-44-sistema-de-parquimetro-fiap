@@ -18,7 +18,7 @@ public class Estacionamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String descricao;
-    private Boolean estado;
+    private Boolean estado = true;      //disponivel
 
     @OneToMany(mappedBy = "estacionamento")
     private List<Alocacao> listaAlocacao;

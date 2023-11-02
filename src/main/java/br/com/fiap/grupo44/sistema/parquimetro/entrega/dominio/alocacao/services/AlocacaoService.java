@@ -1,5 +1,6 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.services;
 
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.adpters.dto.EmailDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.adpters.in.EmailSenderService;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
@@ -10,6 +11,7 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.en
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.repositories.IEstacionamentoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.entities.PeriodoEstacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.repositories.IEParametrizacaoPagamentoRepository;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities.Veiculo;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.repositories.IVeiculoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.exception.ControllerNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,6 +40,7 @@ public class AlocacaoService {
     private IVeiculoRepository veiculoRepository;
     @Autowired
     private IEstacionamentoRepository estacRepository;
+
     @Autowired
     private IEParametrizacaoPagamentoRepository parametrizacaoPagtoRepository;
 
@@ -108,10 +111,15 @@ public class AlocacaoService {
         return new AlocacaoDTO(alocacao,alocacao.getVeiculo(),alocacao.getEstacionamento(),alocacao.getParametrizacaoPagto());
     }
 
-    public AlocacaoDTO save(AlocacaoDTO dto) {
+    public AlocacaoDTO iniciarAlocacao(AlocacaoDTO dto) {
         Alocacao entity = new Alocacao();
         mapperDtoToEntity(dto,entity);
+        if (entity.getEstacionamento() == null || entity.getEstacionamento().getEstado().equals(Boolean.FALSE)){
+             throw new ControllerNotFoundException("Estacionamento não disponivel");
+        }
         var alocacaoSaved = repository.save(entity);
+        entity.getEstacionamento().setEstado(Boolean.FALSE);
+        estacRepository.save(entity.getEstacionamento());
         return new AlocacaoDTO(alocacaoSaved,alocacaoSaved.getVeiculo(),alocacaoSaved.getEstacionamento(),alocacaoSaved.getParametrizacaoPagto());
     }
 
@@ -138,10 +146,29 @@ public class AlocacaoService {
         return new AlocacaoDTO(alocacao);
     }
 
+    public  AlocacaoDTO finalizarAlocacao(Long id) {
+        Alocacao entity = new Alocacao();
+        AlocacaoDTO dto = findById(id);
+        dto.setDataSaida(new Date());
+
+        //Alocação por hora
+        if (dto.getDataFimPago() == null) {
+            dto.setDataFimPago(new Date());
+        }
+
+        mapperDtoToEntity(dto,entity);
+        var alocacaoSaved = repository.save(entity);
+        entity.getEstacionamento().setEstado(Boolean.TRUE);
+        estacRepository.save(entity.getEstacionamento());
+        return new AlocacaoDTO(alocacaoSaved,alocacaoSaved.getVeiculo(),alocacaoSaved.getEstacionamento(),alocacaoSaved.getParametrizacaoPagto());
+    }
+
+
     public void controlaTempoAlocacao(Long id){
         var alocacaoDTO = findById(id);
+        Veiculo veiculo = veiculoRepository.getReferenceById(alocacaoDTO.getVeiculo().getId());
         //Estacionamento alocado para um veiculo
-        if (alocacaoDTO.getDataSaida() == null && alocacaoDTO.getEstacionamento().getEstado()){
+        if (alocacaoDTO.getDataSaida() == null && !alocacaoDTO.getEstacionamento().getEstado()){
 
             //Pega hora atual
             Calendar calAtual = Calendar.getInstance();
@@ -165,7 +192,11 @@ public class AlocacaoService {
                     long minutos = diferencaEmMinutos % 60;
 
                     System.out.println("Sua alocação expira em " + horas + ":" + "minutos");
+
+                    EmailDTO email = new EmailDTO(veiculo.getCondutor().getEmail(),"Tempo restante alocação", "Sua alocação espira em "  + horas + ":" + minutos);
+                    emailService.enviarEmail(email);
                     //Envia mensagem tempo fixo;
+                    //EmailDTO email = new EmailDTO(alocacaoDTO)
                 }
             } else {
                 //Pega hora de entrada e zera segundos
@@ -178,7 +209,8 @@ public class AlocacaoService {
                 Date umaHoraDepois = cal.getTime();
 
                 if (alocacaoDTO.getDataSaida() == null && (calAtual.getTime() == umaHoraDepois || calAtual.getTime().after(umaHoraDepois))){
-                    // criar alerta renovação por mais uma hora
+                    EmailDTO email = new EmailDTO(veiculo.getCondutor().getEmail(),"Renovação automatica alocação", "Sua alocação será renovada automaticamente por mais uma hora ");
+                    emailService.enviarEmail(email);
                 }
 
             }
@@ -209,7 +241,11 @@ public class AlocacaoService {
     }
 
     private void  mapperDtoToEntity(AlocacaoDTO dto, Alocacao entity){
-        entity.setDataEntrada(dto.getDataEntrada());
+        if (dto.getDataEntrada() != null) {
+            entity.setDataEntrada(dto.getDataEntrada());
+        } else {
+            entity.setDataSaida(new Date());
+        }
         entity.setDataSaida(dto.getDataSaida());
         entity.setDataInicioPago(dto.getDataInicioPago());
         entity.setDataFimPago(dto.getDataFimPago());

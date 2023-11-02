@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -66,19 +64,32 @@ public class AlocacaoController {
         alocacaoService.controlaTempoAlocacao(id);
         return ResponseEntity.ok("Controle realizado");
     }
-    @Operation(summary = "Insere alocação",method = "POST")
+    @Operation(summary = "Iniciar alocação",method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "404", description = "Person not found"),
             @ApiResponse(responseCode = "500", description = "Erro no seervio")})
     @PostMapping
-    public ResponseEntity save(@RequestBody AlocacaoDTO alocacaoDTO) {
+    public ResponseEntity iniciar(@RequestBody AlocacaoDTO alocacaoDTO) {
         List<String> violacoesToList = alocacaoService.validate(alocacaoDTO);
         if (!violacoesToList.isEmpty()) {
             return ResponseEntity.badRequest().body(violacoesToList);
         }
-        var alocacaoSaved = alocacaoService.save(alocacaoDTO);
+        var alocacaoSaved = alocacaoService.iniciarAlocacao(alocacaoDTO);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand((alocacaoSaved.getId())).toUri();
+        return ResponseEntity.created(uri).body(alocacaoSaved);
+    }
+
+    @Operation(summary = "Controle de tempo de alocação por id",method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the book"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "404", description = "Person not found"),
+            @ApiResponse(responseCode = "500", description = "Erro no seervio")})
+    @GetMapping("/finalizar/{id}")
+    public ResponseEntity<AlocacaoDTO> finalizar(@PathVariable Long id) {
+        var alocacaoSaved = alocacaoService.finalizarAlocacao(id);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand((alocacaoSaved.getId())).toUri();
         return ResponseEntity.created(uri).body(alocacaoSaved);
     }
