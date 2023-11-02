@@ -16,7 +16,7 @@ public class EmailSenderConfig {
         mailSender.setHost("smtp.office365.com");
         mailSender.setPort(587); // Porta padrão para SMTP do Outlook
         mailSender.setUsername("herickraposo97@hotmail.com.br");
-        mailSender.setPassword("#Raposo97");
+        mailSender.setPassword("#minha senha");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", "true");
