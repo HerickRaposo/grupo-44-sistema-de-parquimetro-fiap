@@ -2,6 +2,8 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.dto;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.dto.CondutorDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.entities.Condutor;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities.Veiculo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -38,10 +40,10 @@ public class VeiculoDTO {
     private Long cavalos;
     @JsonProperty
     @NotNull(message = "Defina ao menos 1 condutor para o veiculo")
-    private Long idCondutor;
+    private CondutorDTO condutor;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<AlocacaoDTO> listaAlocacao;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private List<AlocacaoDTO> listaAlocacao = new ArrayList<>();;
 
     public VeiculoDTO(Veiculo entity){
         this.id = entity.getId();
@@ -51,13 +53,13 @@ public class VeiculoDTO {
         this.cavalos = entity.getCavalos();
     }
 
-    public VeiculoDTO(Veiculo entity, List<Alocacao> alocacoes){
+    public VeiculoDTO(Veiculo entity, Condutor condutor,List<Alocacao> alocacoes){
         this(entity);
-        if (alocacoes != null && alocacoes.size() > 0) {
-            if (this.listaAlocacao == null){
-                this.listaAlocacao = new ArrayList<>();
-            }
+        if (condutor != null){
+            this.condutor = new CondutorDTO(condutor);
+        }
 
+        if (alocacoes != null && alocacoes.size() > 0) {
             for(Alocacao alocacao: alocacoes){
                 this.listaAlocacao.add(new AlocacaoDTO(alocacao));
             }

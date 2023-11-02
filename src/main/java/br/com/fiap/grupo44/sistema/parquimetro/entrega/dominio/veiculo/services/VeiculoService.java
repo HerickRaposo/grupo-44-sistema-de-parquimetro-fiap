@@ -51,19 +51,19 @@ public class VeiculoService {
         }
 
         var veiculos = repository.findAll(specification,pagina);
-        return veiculos.map(veiculo -> new VeiculoDTO(veiculo,veiculo.getAlocacoes()));
+        return veiculos.map(veiculo -> new VeiculoDTO(veiculo,veiculo.getCondutor(),veiculo.getAlocacoes()));
     }
 
     public VeiculoDTO findById(Long id) {
         var veiculo = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Veiculo não encontrado"));
-        return new VeiculoDTO(veiculo,veiculo.getAlocacoes());
+        return new VeiculoDTO(veiculo,veiculo.getCondutor(),veiculo.getAlocacoes());
     }
 
     public VeiculoDTO save(VeiculoDTO dto) {
         Veiculo entity = new Veiculo();
         mapperDtoToEntity(dto,entity);
         var veiculoSaved = repository.save(entity);
-        return new VeiculoDTO(veiculoSaved,veiculoSaved.getAlocacoes());
+        return new VeiculoDTO(veiculoSaved,veiculoSaved.getCondutor(),veiculoSaved.getAlocacoes());
     }
 
 
@@ -73,7 +73,7 @@ public class VeiculoService {
             mapperDtoToEntity(dto,buscaVeiculo);
             buscaVeiculo = repository.save(buscaVeiculo);
 
-            return new VeiculoDTO(buscaVeiculo,buscaVeiculo.getAlocacoes());
+            return new VeiculoDTO(buscaVeiculo,buscaVeiculo.getCondutor(),buscaVeiculo.getAlocacoes());
         } catch (EntityNotFoundException e) {
             throw new EntityNotFoundException("Veiculo não encontrado, id:" + id);
         }
@@ -112,7 +112,6 @@ public class VeiculoService {
         entity.setModelo(dto.getModelo());
         entity.setMatricula(dto.getMatricula());
         entity.setCavalos(dto.getCavalos());
-        entity.setIdCondutor(dto.getIdCondutor());
     }
 
 }

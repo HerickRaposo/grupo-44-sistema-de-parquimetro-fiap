@@ -2,6 +2,7 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.veiculo.entities
 
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.entities.Condutor;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +23,10 @@ public class Veiculo {
     private String modelo;
     private String matricula;
     private Long cavalos;
-    private Long idCondutor;
+
+    @ManyToOne
+    @JoinColumn(name = "condutor_id")
+    private Condutor condutor;
 
     @OneToMany(mappedBy = "veiculo")
     private List<Alocacao> alocacoes;
