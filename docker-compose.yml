@@ -1,0 +1,26 @@
+version: '3'
+services:
+  parquimetro-app:
+    image: openjdk:11-jre-slim
+    container_name: parquimetro-app
+    working_dir: /app
+    volumes:
+      - ./app:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://parquimetro-db:3306/grupo44?useTimezone=true&serverTimezone=America/Sao_Paulo
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+    depends_on:
+      - parquimetro-db
+    command: ["java", "-jar", "parquimetro.jar"]
+
+  parquimetro-db:
+    image: mysql:8
+    container_name: parquimetro-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=grupo44
+    ports:
+      - "3306:3306"

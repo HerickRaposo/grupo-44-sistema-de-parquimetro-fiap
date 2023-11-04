@@ -1,4 +1,4 @@
-package br.com.fiap.grupo44.sistema.parquimetro.entrega.adpters.in;
+package br.com.fiap.grupo44.sistema.parquimetro.entrega.adpters.in.email;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.adpters.dto.EmailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailSenderService {
+
+    @Autowired
     private final JavaMailSender javaMailSender;
 
     public EmailSenderService(JavaMailSender javaMailSender) {

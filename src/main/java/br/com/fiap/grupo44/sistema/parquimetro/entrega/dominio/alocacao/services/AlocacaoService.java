@@ -1,7 +1,7 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.services;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.adpters.dto.EmailDTO;
-import br.com.fiap.grupo44.sistema.parquimetro.entrega.adpters.in.EmailSenderService;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.adpters.in.email.EmailSenderService;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.repositories.IAlocacaoRepository;
