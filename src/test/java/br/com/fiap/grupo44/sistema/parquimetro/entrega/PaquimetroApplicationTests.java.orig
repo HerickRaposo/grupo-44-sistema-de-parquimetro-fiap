@@ -1,0 +1,18 @@
+<<<<<<< HEAD:src/test/java/br/com/fiap/grupo44/sistema/parquimetro/paquimetro/PaquimetroApplicationTests.java
+package br.com.fiap.grupo44.sistema.parquimetro.paquimetro;
+=======
+package br.com.fiap.grupo44.sistema.parquimetro.entrega;
+>>>>>>> 5c2d0d26224342d51dbad1d0e850e41f840b93a0:src/test/java/br/com/fiap/grupo44/sistema/parquimetro/entrega/PaquimetroApplicationTests.java
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class PaquimetroApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
+
