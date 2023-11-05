@@ -106,7 +106,7 @@ kubernetes:
 #  dependencies:
 #    - build
 
-deploy-db:
+#deploy-db:
 #  extends: .deploy-common
 #  script:
 #
