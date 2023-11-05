@@ -11,7 +11,7 @@
     <groupId>br.com.mattec.grupo44.sistema.parquimetro</groupId>
     <artifactId>paquimetro</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ParquímetroGRUPO44</name>
+    <name>paquimetro</name>
     <description>GRUPO 44 Sistema de Parquímetro FIAP</description>
     <properties>
         <java.version>17</java.version>
@@ -77,7 +77,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>ParquímetroGRUPO44</finalName>
     </build>
 
 </project>
