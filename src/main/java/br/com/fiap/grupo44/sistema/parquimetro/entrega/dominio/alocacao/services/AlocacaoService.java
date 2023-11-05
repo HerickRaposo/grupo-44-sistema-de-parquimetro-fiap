@@ -7,7 +7,6 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.repositories.IAlocacaoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.Paginator;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.RestDataReturnDTO;
-import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.repositories.IEstacionamentoRepository;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.entities.PeriodoEstacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.parametrizacaoPagamento.repositories.IEParametrizacaoPagamentoRepository;
@@ -138,7 +137,7 @@ public class AlocacaoService {
     public AlocacaoDTO updateAlocacaoByFields(Long id, Map<String, Object> fields) {
         Alocacao existingAlocacao = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Alocação não encontrada"));
         fields.forEach((key, value) -> {
-            Field field = ReflectionUtils.findField(Estacionamento.class, key);
+            Field field = ReflectionUtils.findField(Alocacao.class, key);
             field.setAccessible(true);
             ReflectionUtils.setField(field, existingAlocacao, value);
         });
@@ -216,7 +215,7 @@ public class AlocacaoService {
             }
 
             Map<String,Object> mapaDtaVerificacao = new HashMap<>();
-            mapaDtaVerificacao.put("ultima_verificacao", calAtual.getTime());
+            mapaDtaVerificacao.put("ultimaVerificacao", calAtual.getTime());
             updateAlocacaoByFields(alocacaoDTO.getId(), mapaDtaVerificacao);
 
         }

@@ -54,7 +54,7 @@ public class EstacionamentoService {
         final Page<EstacionamentoDTO> map = estacionamentos.map(EstacionamentoDTO::new);
 
         for (Estacionamento estacionamento : estacionamentos.getContent()) {
-            estacionamentoDTO = new EstacionamentoDTO(estacionamento,estacionamento.getListaAlocacao());
+            estacionamentoDTO = new EstacionamentoDTO(estacionamento,estacionamento.getEndereco(),estacionamento.getListaAlocacao());
             BeanUtils.copyProperties(estacionamento, estacionamentoDTO);
             estacionamentosDTO.add(estacionamentoDTO);
 
@@ -78,14 +78,14 @@ public class EstacionamentoService {
 
     public EstacionamentoDTO findById(Long id) {
         var estacionamento = repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Estacionamento não encontrado"));
-        return new EstacionamentoDTO(estacionamento,estacionamento.getListaAlocacao());
+        return new EstacionamentoDTO(estacionamento,estacionamento.getEndereco(),estacionamento.getListaAlocacao());
     }
 
     public EstacionamentoDTO save(EstacionamentoDTO dto) {
         Estacionamento entity = new Estacionamento();
         mapperDtoToEntity(dto,entity);
         var estacSaved = repository.save(entity);
-        return new EstacionamentoDTO(estacSaved,estacSaved.getListaAlocacao());
+        return new EstacionamentoDTO(estacSaved,estacSaved.getEndereco(),estacSaved.getListaAlocacao());
     }
 
     public EstacionamentoDTO update(Long id, EstacionamentoDTO dto) {
@@ -94,7 +94,7 @@ public class EstacionamentoService {
             mapperDtoToEntity(dto,buscaEstacionamento);
             buscaEstacionamento = repository.save(buscaEstacionamento);
 
-            return new EstacionamentoDTO(buscaEstacionamento,buscaEstacionamento.getListaAlocacao());
+            return new EstacionamentoDTO(buscaEstacionamento,buscaEstacionamento.getEndereco(),buscaEstacionamento.getListaAlocacao());
         } catch (EntityNotFoundException e) {
             throw new EntityNotFoundException("Estacionamento não encontrado, id:" + id);
         }

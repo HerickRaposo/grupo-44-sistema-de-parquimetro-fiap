@@ -1,6 +1,7 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.entities.Endereco;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,10 @@ public class Estacionamento {
     private Long id;
     private String descricao;
     private Boolean estado = true;      //disponivel
+
+    @ManyToOne
+    @JoinColumn(name = "endereco_id") // Nome da coluna que faz referência ao Endereco
+    private Endereco endereco;
 
     @OneToMany(mappedBy = "estacionamento")
     private List<Alocacao> listaAlocacao;

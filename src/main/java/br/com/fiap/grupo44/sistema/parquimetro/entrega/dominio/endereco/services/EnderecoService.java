@@ -11,6 +11,8 @@ import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.dto.Pagi
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.dto.RestDataReturnDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.entities.Endereco;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.repositories.IEEnderecoRepository;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.EstacionamentoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.exception.ControllerNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,14 +75,17 @@ public class EnderecoService {
 	}
 
 	public RestDataReturnDTO findAll(PageRequest pageRequest){
-		Page<Endereco> enderecos      = enderecoRepository.findAll(pageRequest);
+		Page<Endereco> enderecos   = enderecoRepository.findAll(pageRequest);
      	List<EnderecoDTO> enderecosDTO= new ArrayList<EnderecoDTO>();
      	EnderecoDTO enderecoDTO;
      	List<CondutorDTO>   condutoresDTO;
 		CondutorDTO pessoaDTO;
-        if(!enderecos.isEmpty()) {   
+		List<EstacionamentoDTO> estacionamentosDTO;
+		EstacionamentoDTO estacionamentoDTO;
+        if(!enderecos.isEmpty()) {
         	for (Endereco endereco : enderecos) {
         		condutoresDTO   = new ArrayList<CondutorDTO>();
+				estacionamentosDTO = new ArrayList<EstacionamentoDTO>();
         		enderecoDTO= new EnderecoDTO();
         		BeanUtils.copyProperties(endereco, enderecoDTO);
         		for (Condutor condutor : endereco.getCondutores()) {
@@ -89,9 +94,16 @@ public class EnderecoService {
         			condutoresDTO.add(pessoaDTO);
         		}
         		
-        		enderecoDTO.setCondutorDTO(condutoresDTO);
         		enderecosDTO.add(enderecoDTO);
-        		
+
+				for (Estacionamento estacionamento : endereco.getEstacionamentos()){
+					estacionamentoDTO = new EstacionamentoDTO();
+					BeanUtils.copyProperties(estacionamento, estacionamentoDTO);
+					estacionamentosDTO.add(estacionamentoDTO);
+				}
+
+				enderecoDTO.setEstacionamentos(estacionamentosDTO);
+				enderecosDTO.add(enderecoDTO);
         		
 			}
         	return new RestDataReturnDTO(enderecosDTO, new Paginator(enderecos.getNumber(), enderecos.getTotalElements(), enderecos.getTotalPages()));

@@ -1,6 +1,7 @@
 package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.entities;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.entities.Condutor;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,4 +30,8 @@ public class Endereco {
 			joinColumns = @JoinColumn(name = "endereco_id"),
 			inverseJoinColumns = @JoinColumn(name = "condutor_id"))
 	private List<Condutor> condutores= new ArrayList<>();
+
+	@OneToMany(mappedBy = "endereco")
+	private List<Estacionamento> estacionamentos = new ArrayList<>();
+
 }

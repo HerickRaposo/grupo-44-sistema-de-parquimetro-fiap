@@ -2,6 +2,8 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.d
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.dto.EnderecoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.entities.Endereco;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,6 +34,8 @@ public class EstacionamentoDTO {
     private Boolean estado;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<AlocacaoDTO> listaAlocacao;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private EnderecoDTO endereco;
 
     public EstacionamentoDTO(Estacionamento entity){
         this.id = entity.getId();
@@ -39,8 +43,12 @@ public class EstacionamentoDTO {
         this.estado = entity.getEstado();
     }
 
-    public EstacionamentoDTO(Estacionamento entity, List<Alocacao> alocacoes) {
+    public EstacionamentoDTO(Estacionamento entity, Endereco endereco, List<Alocacao> alocacoes) {
         this(entity);
+        if (endereco != null){
+            this.endereco = new EnderecoDTO(endereco);
+        }
+
         if (alocacoes != null && alocacoes.size() > 0) {
             if (this.listaAlocacao == null){
                 this.listaAlocacao = new ArrayList<>();

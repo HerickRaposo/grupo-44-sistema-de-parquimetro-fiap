@@ -2,6 +2,8 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.dto;
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.condutores.dto.CondutorDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.entities.Endereco;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.EstacionamentoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.entities.Estacionamento;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -28,7 +30,9 @@ public class EnderecoDTO {
 	private String cep;
     @JsonInclude(JsonInclude.Include.NON_NULL)
 	private List<CondutorDTO> condutorDTO;
-	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private List<EstacionamentoDTO> estacionamentos;
+
 	public EnderecoDTO() {
 		 
 	}
