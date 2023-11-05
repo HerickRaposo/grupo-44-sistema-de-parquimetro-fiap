@@ -5,45 +5,119 @@
 ###############################################
 
 
-stages:
-  - teste
-  - build
-  - deploy
+#stages:
+#  - teste
+#  - build
+#  - deploy
+#
+#
+#executar_teste:
+#  stage: teste
+#  before_script:
+#    - echo "Preparando testes..."
+#    - chmod +x ./script.sh
+#  script:
+#    - ./script.sh
+#  after_script:
+#    - echo "Apagando arquivos temporários..."
+#
+#executar_teste2:
+#  image: node:19.1
+#  needs:
+#    - executar_teste
+#  stage: teste
+#  script:
+#    - echo "Executando mais um teste..."
+#    - npm version
+#
+#criar_imagens:
+#  stage: build
+#  script:
+#    - echo "Criando as imagens..."
+#
+#push_imagens:
+#  needs:
+#    - criar_imagens
+#  stage: build
+#  script:
+#    echo "Realizando upload das imagens..."
+#
+#kubernetes:
+#  stage: deploy
+#  script:
+#    - echo "Executando deploy..."
 
 
-executar_teste:
-  stage: teste
-  before_script:
-    - echo "Preparando testes..."
-    - chmod +x ./script.sh
-  script:
-    - ./script.sh  
-  after_script:
-    - echo "Apagando arquivos temporários..."
+###############################################
+##### Pipeline Gitlab-CI - v1.0           #####
+##### MATTEC PROJETOS  - 08/10/2023       #####
+##### GRUPO 44 FIAP                       #####
+###############################################
 
-executar_teste2:
-  image: node:19.1
-  needs:
-    - executar_teste
-  stage: teste
-  script:
-    - echo "Executando mais um teste..."
-    - npm version
+# ATENÇÃO   <LEITURA DO PROJETO OBRIGATÓRIA> <POR FAVOR LEIA O CÓDIGO COMENTADO ABAIXO!!!!!>
+# Este seria o real pipeline para que a imagem fossed deplyada na AWS, porém comentamos o código para não prosseguir e evitar erros
+# na demostração. Claro que subtituído a variáveis abaixo e caminho o projeto iria subir!
+#vassim como o nosso job-commons.yml configurado corretamente teria o deploy correspondente dentro de uma esteira já configurada!
+#image: image.app/build-tools:da5ef69a-java-8
+#
+#include:
+#  - project: ''
+#    file: 'job-commons.yml'
+#
+#variables:
+#  DOCKER_HOST: tcp://localhost:2375
+#  DOCKER_TLS_CERTDIR: ""
+#  REGION: us-east-1
+#
+#services:
+#  - docker:stable-dind
 
-criar_imagens:
-  stage: build
-  script:
-    - echo "Criando as imagens..."
+#stages:
+#  - build
+#  - deploy
 
-push_imagens:
-  needs:
-    - criar_imagens
-  stage: build
-  script:
-    echo "Realizando upload das imagens..."
+#before_script:
+#  - $(aws ecr get-login --no-include-email --region "${AWS_REGION}")
+#  - export IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
+#  - VERSION=$(date +"%Y%m%d%H%M")
+#  - echo $IMAGE_TAG $CI_COMMIT_REF_NAME $VERSION
 
-kubernetes:
-  stage: deploy
-  script:
-    - echo "Executando deploy..."
+#build:
+##  stage: build
+#  only:
+#    - master
+#  when: manual
+#  script:
+#    - docker build -t parquimetro-app .
+#    - docker tag parquimetro-app:latest $REPOSITORY_URL:$IMAGE_TAG
+#    - docker push $REPOSITORY_URL:$IMAGE_TAG
 
+#deploy-app:
+#  extends: .deploy-common
+#  script:
+#    - chmod +x version-update.sh
+#    - ./version-update.sh $IMAGE_TAG $CI_COMMIT_REF_NAME $CI_COMMIT_SHORT_SHA "parquimetro-app" || { echo 'task failed' ; exit 1; }
+#    - git add . && git commit -am "Update module $CI_PROJECT_NAME with version $CI_COMMIT_SHORT_SHA $CI_COMMIT_REF_NAME by CI's jobs $CI_JOB_URL trigged by $GITLAB_USER_EMAIL"
+#    - git push origin $CI_COMMIT_REF_NAME
+#  stage: deploy
+#  when: manual
+#  only:
+#    - master
+#  dependencies:
+#    - build
+
+deploy-db:
+#  extends: .deploy-common
+#  script:
+#
+#    - cp -rf ../database/migration/*.sql ./database/migration/
+#    - chmod +x version-update.sh
+#    - ./version-update.sh $IMAGE_TAG $CI_COMMIT_REF_NAME $CI_COMMIT_SHORT_SHA "migration" || { echo 'task failed' ; exit 1; }
+#    - git add . && git commit -am "Update module $CI_PROJECT_NAME with version $CI_COMMIT_SHORT_SHA $CI_COMMIT_REF_NAME by CI's jobs $CI_JOB_URL trigged by $GITLAB_USER_EMAIL"
+#    - git push origin $CI_COMMIT_REF_NAME
+#  stage: deploy
+#  when: manual
+#  only:
+#    - master
+#  dependencies:
+#    - build

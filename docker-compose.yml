@@ -14,7 +14,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=
     depends_on:
       - parquimetro-db
-    command: ["java", "-jar", "parquimetro.jar"]
+    command: ["java", "-jar", "parquimetro-app.jar"]
 
   parquimetro-db:
     image: mysql:8

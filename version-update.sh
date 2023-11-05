@@ -1,0 +1,1 @@
+# NÚMERO DO HASH da versão

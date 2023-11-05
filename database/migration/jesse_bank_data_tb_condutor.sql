@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `tb_pessoa`
+-- Table structure for table `tb_condutor`
 --
 
-DROP TABLE IF EXISTS `tb_pessoa`;
+DROP TABLE IF EXISTS `tb_condutor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tb_pessoa` (
+CREATE TABLE `tb_condutor` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `cell` varchar(255) DEFAULT NULL,
   `dataDeCriacao` datetime(6) DEFAULT NULL,
@@ -35,19 +35,18 @@ CREATE TABLE `tb_pessoa` (
   `phone` varchar(255) DEFAULT NULL,
   `sexo` varchar(255) DEFAULT NULL,
   `sobrenome` varchar(255) DEFAULT NULL,
-  `somatorioCustoMensal` double DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tb_pessoa`
+-- Dumping data for table `tb_condutor`
 --
 
-LOCK TABLES `tb_pessoa` WRITE;
-/*!40000 ALTER TABLE `tb_pessoa` DISABLE KEYS */;
-INSERT INTO `tb_pessoa` VALUES (2,'7783297933','2023-09-06 03:10:29.000000','1971-08-18T09:49:47.726Z','mitesh.banerjee@example.com','https://randomuser.me/api/portraits/men/88.jpg',52,'IN','Mr Mitesh','9094035647','male','Banerjee',NULL),(3,'92269534','2023-09-06 03:10:42.000000','1987-01-17T07:59:18.048Z','ines.gjesdal@example.com','https://randomuser.me/api/portraits/women/92.jpg',36,'NO','Ms Ines','74843040','female','Gjesdal',NULL),(4,'41277510','2023-09-06 03:10:44.000000','1966-01-03T05:48:45.684Z','katarina.bruheim@example.com','https://randomuser.me/api/portraits/women/35.jpg',57,'NO','Ms Katarina','34698905','female','Bruheim',NULL),(5,'(096) B45-5149','2023-09-06 03:10:46.000000','1995-08-30T19:36:04.818Z','stefaniya.grodskiy@example.com','https://randomuser.me/api/portraits/women/28.jpg',28,'UA','Miss Stefaniya','(097) T48-2399','female','Grodskiy',NULL),(6,'(945) 320-5131','2023-09-06 03:13:13.000000','1956-05-21T02:59:09.716Z','pauline.barrett@example.com','https://randomuser.me/api/portraits/women/89.jpg',67,'US','Ms Pauline','(299) 646-7738','female','Barrett',NULL);
-/*!40000 ALTER TABLE `tb_pessoa` ENABLE KEYS */;
+LOCK TABLES `tb_condutor` WRITE;
+/*!40000 ALTER TABLE `tb_condutor` DISABLE KEYS */;
+INSERT INTO `tb_condutor` VALUES (2,'7783297933','2023-09-06 03:10:29.000000','1971-08-18T09:49:47.726Z','mitesh.banerjee@example.com','https://randomuser.me/api/portraits/men/88.jpg',52,'IN','Mr Mitesh','9094035647','male','Banerjee',NULL),(3,'92269534','2023-09-06 03:10:42.000000','1987-01-17T07:59:18.048Z','ines.gjesdal@example.com','https://randomuser.me/api/portraits/women/92.jpg',36,'NO','Ms Ines','74843040','female','Gjesdal',NULL),(4,'41277510','2023-09-06 03:10:44.000000','1966-01-03T05:48:45.684Z','katarina.bruheim@example.com','https://randomuser.me/api/portraits/women/35.jpg',57,'NO','Ms Katarina','34698905','female','Bruheim',NULL),(5,'(096) B45-5149','2023-09-06 03:10:46.000000','1995-08-30T19:36:04.818Z','stefaniya.grodskiy@example.com','https://randomuser.me/api/portraits/women/28.jpg',28,'UA','Miss Stefaniya','(097) T48-2399','female','Grodskiy',NULL),(6,'(945) 320-5131','2023-09-06 03:13:13.000000','1956-05-21T02:59:09.716Z','pauline.barrett@example.com','https://randomuser.me/api/portraits/women/89.jpg',67,'US','Ms Pauline','(299) 646-7738','female','Barrett',NULL);
+/*!40000 ALTER TABLE `tb_condutor` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
