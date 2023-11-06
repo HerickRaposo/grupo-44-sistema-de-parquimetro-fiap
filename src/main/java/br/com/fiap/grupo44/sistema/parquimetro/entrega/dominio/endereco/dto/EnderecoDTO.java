@@ -30,7 +30,7 @@ public class EnderecoDTO {
 	private String cep;
     @JsonInclude(JsonInclude.Include.NON_NULL)
 	private List<CondutorDTO> condutorDTO;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private List<EstacionamentoDTO> estacionamentos;
 
 	public EnderecoDTO() {

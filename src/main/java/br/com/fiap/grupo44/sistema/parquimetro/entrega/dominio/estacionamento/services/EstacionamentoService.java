@@ -2,6 +2,9 @@ package br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.s
 
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.dto.AlocacaoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.alocacao.entities.Alocacao;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.dto.EnderecoDTO;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.entities.Endereco;
+import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.endereco.services.EnderecoService;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.EstacionamentoDTO;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.Paginator;
 import br.com.fiap.grupo44.sistema.parquimetro.entrega.dominio.estacionamento.dto.RestDataReturnDTO;
@@ -32,6 +35,9 @@ import java.util.stream.Collectors;
 public class EstacionamentoService {
     @Autowired
     private IEstacionamentoRepository repository;
+
+    @Autowired
+    private EnderecoService enderecoService;
 
     public RestDataReturnDTO findAll(EstacionamentoDTO filtro, PageRequest pagina) {
         List<EstacionamentoDTO> estacionamentosDTO= new ArrayList<EstacionamentoDTO>();
@@ -71,6 +77,7 @@ public class EstacionamentoService {
                 alocacoesList.add(alocacaoDTO);
             }
             estacionamentoDTO.setListaAlocacao(alocacoesList);
+            estacionamentoDTO.setEndereco(estacionamento.getEndereco() == null ? null : new EnderecoDTO(estacionamento.getEndereco()));
         }
         return new RestDataReturnDTO(estacionamentosDTO, new Paginator(estacionamentos.getNumber(), estacionamentos.getTotalElements(), estacionamentos.getTotalPages()));
 
@@ -84,6 +91,12 @@ public class EstacionamentoService {
     public EstacionamentoDTO save(EstacionamentoDTO dto) {
         Estacionamento entity = new Estacionamento();
         mapperDtoToEntity(dto,entity);
+        if (dto.getEndereco() != null){
+            EnderecoDTO enderecoDTO = enderecoService.findById(dto.getEndereco().getId());
+            Endereco endereco = new Endereco();
+            BeanUtils.copyProperties(enderecoDTO, endereco);
+            entity.setEndereco(endereco);
+        }
         var estacSaved = repository.save(entity);
         return new EstacionamentoDTO(estacSaved,estacSaved.getEndereco(),estacSaved.getListaAlocacao());
     }

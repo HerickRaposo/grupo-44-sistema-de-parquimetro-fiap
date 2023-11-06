@@ -1,92 +1,1471 @@
 # GRUPO 44 Sistema de Parquímetro FIAP
 
 
+## Introdução:
 
-## Getting started
+Conforme solicitado foi desenvolvido sistema de gerenciamento de parquimetro onde o condutor cadastra suas informações pessoais e de contato bem como as informações de seu veiculo, posteriormente o mesmo escolhe a forma que irá efetuar o pagamento podendo ser PIX,cartão ou outras formas cadastradas pelos gestores do sistema escolhendo também o periodo a ser cobrado podendo escolher entre período FIXO ou POR HORA. Após o colheta de dados do condutor e veiculo e parametrização de pagamento o sistema iniciará a alocação do veiculo e posteriormente iniciará a contagem de tempo. No decorrer das horas, baseado na escolha de periodo de estacionamento (Fixo/hora) o sistema emitirá alertas via email para o condutor, caso o condutor tenha optado por cobrança por hora o sistema enviará email alertando que a alocação foi renovada automaticamente por mais uma hora pelo sistema, entretanto caso tenha escolhido por periodo fixo, o sistema avisará qual tempo restante para vencer o prazo de alocação. Este processo de verificação se repetirá até a saida(Baixa) dada pelo condutor no sistema onde oobtirá relatório contendo todas informações sobre alocação.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+<h1 align="center">
+  Desenvolvimento das APIs
+</h1>
 
-## Add your files
+## Tecnologias
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+ [GitLab](https://about.gitlab.com/):Plataforma de gerenciamento de ciclo de vida de desenvolvimento de software com versionamento de codigo git.
+ 
+ [GitLab](https://about.gitlab.com/):Plataforma de gerenciamento de ciclo de vida de desenvolvimento de software com versionamento de codigo git.
+- [Spring Boot](https://spring.io/projects/spring-boot):Modulo derivado do Spring Framework que facilita desenvolvimento de aplicações java implementando injeção e inversão de dependencias
+- [H2](https://github.com/h2database/h2database/releases/download/version-2.2.220/h2.pdf): Gerenciador de banco de dados relacional
+- [Postman](https://learning.postman.com/docs/developer/postman-api/intro-api/): Ferramenta destinada a desenvolvedores que possibilita testar chamadas API e gerar documentação de forma iterativa.Foi usado neste projeto para gerar collections e realizar teste de chamadas aos endpoints;
+- [Tortoise](https://tortoisegit.org/docs/tortoisegit/): Ferramenta gerencial que facilita manipulação de projetos em GIT. Foi usado neste projeto para resolução de conflitos.
+- [Sourcetree](https://confluence.atlassian.com/get-started-with-sourcetree): Assim como o Tortoise é uma ferramenta gerencial para facilitar o desenvolvimento de projetos em Git, no entanto possui uma interface mais receptivel e navegabilidade facilitada.Foi usado neste projeto paa navegação e criação de ramos.
+## Práticas adotadas
+
+
+- Uso de DTOs para a API
+- Injeção de Dependências
+
+## Escalabilidade de sistema:
+
+- [Modularização em Containner e Docker](https://about.gitlab.com/): Docker é uma plataforma de código aberto que facilita a criação, implantação e gerenciamento de aplicativos por meio de contêineres, que são ambientes isolados e leves. Esses contêineres empacotam aplicativos e suas dependências, permitindo uma execução consistente em diversos sistemas, eliminando problemas de compatibilidade e melhorando a eficiência no desenvolvimento.
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap.git
-git branch -M main
-git push -uf origin main
+version: '3'
+services:
+  parquimetro-app:
+    image: openjdk:11-jre-slim
+    container_name: parquimetro-app
+    working_dir: /app
+    volumes:
+      - ./app:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://parquimetro-db:3306/grupo44?useTimezone=true&serverTimezone=America/Sao_Paulo
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+    depends_on:
+      - parquimetro-db
+    command: ["java", "-jar", "parquimetro-app.jar"]
+
+  parquimetro-db:
+    image: mysql:8
+    container_name: parquimetro-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=grupo44
+    ports:
+      - "3306:3306"
+
+```
+- [CI](https://about.gitlab.com/) (Continuous Integration):  CI (Continuous Integration) é uma prática de desenvolvimento em que as alterações de código são regularmente integradas e testadas automaticamente. O GitLab CI automatiza esse processo, organizando-o em pipelines, que representam as etapas de construção, teste e implantação de um aplicativo. Isso melhora a eficiência e a qualidade do desenvolvimento de software.
+
+```
+###############################################
+##### Pipeline Gitlab-CI - v1.0           #####
+##### MATTEC PROJETOS  - 08/10/2023       #####
+##### GRUPO 44 FIAP                       #####
+###############################################
+
+
+stages:
+  - teste
+  - build
+  - deploy
+
+
+executar_teste:
+  stage: teste
+  before_script:
+    - echo "Preparando testes..."
+    - chmod +x ./script.sh
+  script:
+    - ./script.sh
+  after_script:
+    - echo "Apagando arquivos temporários..."
+
+executar_teste2:
+  image: node:19.1
+  needs:
+    - executar_teste
+  stage: teste
+  script:
+    - echo "Executando mais um teste..."
+    - npm version
+
+criar_imagens:
+  stage: build
+  script:
+    - echo "Criando as imagens..."
+
+push_imagens:
+  needs:
+    - criar_imagens
+  stage: build
+  script:
+    echo "Realizando upload das imagens..."
+
+kubernetes:
+  stage: deploy
+  script:
+    - echo "Executando deploy..."
+
+
+##############################################
+#### Pipeline Gitlab-CI - v1.0           #####
+#### MATTEC PROJETOS  - 08/10/2023       #####
+#### GRUPO 44 FIAP                       #####
+##############################################
+
+ ATENÇÃO   <LEITURA DO PROJETO OBRIGATÓRIA> <POR FAVOR LEIA O CÓDIGO COMENTADO ABAIXO!!!!!>
+ Este seria o real pipeline para que a imagem fossed deplyada na AWS, porém comentamos o código para não prosseguir e evitar erros
+ na demostração. Claro que subtituído a variáveis abaixo e caminho o projeto iria subir!
+vassim como o nosso job-commons.yml configurado corretamente teria o deploy correspondente dentro de uma esteira já configurada!
+image: image.app/build-tools:da5ef69a-java-8
+
+include:
+  - project: ''
+    file: 'job-commons.yml'
+
+variables:
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_TLS_CERTDIR: ""
+  REGION: us-east-1
+
+services:
+  - docker:stable-dind
+
+stages:
+  - build
+  - deploy
+
+before_script:
+  - $(aws ecr get-login --no-include-email --region "${AWS_REGION}")
+  - export IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
+  - VERSION=$(date +"%Y%m%d%H%M")
+  - echo $IMAGE_TAG $CI_COMMIT_REF_NAME $VERSION
+
+build:
+#  stage: build
+  only:
+    - master
+  when: manual
+  script:
+    - docker build -t parquimetro-app .
+    - docker tag parquimetro-app:latest $REPOSITORY_URL:$IMAGE_TAG
+    - docker push $REPOSITORY_URL:$IMAGE_TAG
+
+deploy-app:
+  extends: .deploy-common
+  script:
+    - chmod +x version-update.sh
+    - ./version-update.sh $IMAGE_TAG $CI_COMMIT_REF_NAME $CI_COMMIT_SHORT_SHA "parquimetro-app" || { echo 'task failed' ; exit 1; }
+    - git add . && git commit -am "Update module $CI_PROJECT_NAME with version $CI_COMMIT_SHORT_SHA $CI_COMMIT_REF_NAME by CI's jobs $CI_JOB_URL trigged by $GITLAB_USER_EMAIL"
+    - git push origin $CI_COMMIT_REF_NAME
+  stage: deploy
+  when: manual
+  only:
+    - master
+  dependencies:
+    - build
+
+deploy-db:
+  extends: .deploy-common
+  script:
+
+    - cp -rf ../database/migration/*.sql ./database/migration/
+    - chmod +x version-update.sh
+    - ./version-update.sh $IMAGE_TAG $CI_COMMIT_REF_NAME $CI_COMMIT_SHORT_SHA "migration" || { echo 'task failed' ; exit 1; }
+    - git add . && git commit -am "Update module $CI_PROJECT_NAME with version $CI_COMMIT_SHORT_SHA $CI_COMMIT_REF_NAME by CI's jobs $CI_JOB_URL trigged by $GITLAB_USER_EMAIL"
+    - git push origin $CI_COMMIT_REF_NAME
+  stage: deploy
+  when: manual
+  only:
+    - master
+  dependencies:
+    - build
 ```
 
-## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap/-/settings/integrations)
+## Como Executar
 
-## Collaborate with your team
+### Localmente
+- Clonar repositório git
+- Construir o projeto:
+```
+./mvnw clean package
+```
+- Executar:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
 
-## Test and Deploy
+A API poderá ser acessada em [localhost:8080](http://localhost:8080)
 
-Use the built-in continuous integration in GitLab.
+O Swagger poderá ser visualizado em [localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
-***
 
-# Editing this README
+<h1 align="center">
+  API ESTACIONAMENTO
+</h1>
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+<p align="center">
+https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap
+</p>
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+API para gerenciamento de estacionamentos. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de estacionamentos.
 
-## Name
-Choose a self-explaining name for your project.
+## API Endpoints
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Lista de estacionamento
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- GET /alocacao
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```
+http GET http://localhost:8080/estacionamento
+{
+    "data": [
+        {
+            "id": 1,
+            "descricao": "Vaga A",
+            "estado": false,
+            "listaAlocacao": [
+                {
+                    "id": 7,
+                    "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+                    "dataSaida": null,
+                    "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+                    "dataFimPago": "2023-11-05T10:00:00.000+00:00"
+                },
+                {
+                    "id": 1,
+                    "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+                    "dataSaida": null,
+                    "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+                    "dataFimPago": null
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "descricao": "Vaga B",
+            "estado": true,
+            "listaAlocacao": [
+                {
+                    "id": 7,
+                    "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+                    "dataSaida": null,
+                    "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+                    "dataFimPago": "2023-11-05T10:00:00.000+00:00"
+                },
+                {
+                    "id": 1,
+                    "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+                    "dataSaida": null,
+                    "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+                    "dataFimPago": null
+                }
+            ]
+        }
+    ],
+    "paginator": {
+        "pageNumber": 0,
+        "totalElements": 2,
+        "totalPages": 1
+    }
+}
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+* GET /alocacao/{id}
+```
+http://localhost:8080/estacionamento/1
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+{
+    "id": 1,
+    "descricao": "Vaga A",
+    "estado": false,
+    "listaAlocacao": [
+        {
+            "id": 7,
+            "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+            "dataSaida": null,
+            "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T10:00:00.000+00:00"
+        },
+        {
+            "id": 1,
+            "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+            "dataSaida": null,
+            "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+            "dataFimPago": null
+        }
+    ]
+}
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+CADASTRO DE ESTACIONAMENTO
+* POST /alocacao
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```
+http POST http://localhost:8080/estacionamento
+HTTP/1.1 201 CREATED
+Content-Length: 129
+Content-Type: application/json
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+{
+    "descricao":"Vaga f",
+    "estado": false,
+    "endereco": {
+        "id": 3
+    }
+}                           
+```
+ATUALIZAÇÃO DE ESTACIONAMENTO:
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- PUT /Alocação/9
+```
+http://localhost:8080/estacionamento/1
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+{
+    "id": 1,
+    "descricao": "Vaga A",
+    "estado": false,
+    "endereco":{
+        "id":6
+    },
+    "listaAlocacao": [
+        {
+            "id": 1
+        },
+        {
+            "id": 2
+        }
+    ]
+}                           
+```
+- PATCH: /formaPagto/9
+```
+http://localhost:8080/estacionamento/1
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
 
-## License
-For open source projects, say how it is licensed.
+{
+  "descricao": "Vaga A"
+}
+```
+DELEÇÃO DE ESTACIONAMENTO
+- DELETE /formaPagto/{id}
+```
+DELETE http://localhost:8080/estacionamento/1
+HTTP/1.1 204 No Content
+Content-Length: 142
+Content-Type: application/json
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+```
+
+<h1 align="center">
+  API FORMA DE PAGAMENTO
+</h1>
+
+<p align="center">
+ https://github.com/jessemusic/FIAP-GRUPO-44 
+</p>
+
+API para gerenciamento de forma de pagamento. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de forma de pagamento.
+
+## API Endpoints
+
+
+Lista de formas de pagamento
+
+- GET /formaPagto
+
+```
+http GET http://localhost:8080/formaPagto
+{
+    "data": {
+        "content": [
+            {
+                "id": 1,
+                "descricao": "PIX",
+                "estado": true
+            },
+            {
+                "id": 2,
+                "descricao": "CREDITO",
+                "estado": true
+            },
+            {
+                "id": 3,
+                "descricao": "DEBITO",
+                "estado": true
+            }
+        ],
+        "pageable": {
+            "pageNumber": 0,
+            "pageSize": 10,
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "offset": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "last": true,
+        "totalElements": 3,
+        "totalPages": 1,
+        "size": 10,
+        "number": 0,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "numberOfElements": 3,
+        "first": true,
+        "empty": false
+    },
+    "paginator": {
+        "pageNumber": 0,
+        "totalElements": 3,
+        "totalPages": 1
+    }
+}
+```
+
+* GET /formaPagto/{id}
+```
+http://localhost:8080/formaPagto/1
+
+{
+    "id": 1,
+    "descricao": "PIX",
+    "estado": true
+}
+```
+
+CADASTRO DE FORMA DE PAGAMENTO
+* POST /alocacao
+
+```
+http POST http://localhost:8080/formaPagto
+HTTP/1.1 201 CREATED
+Content-Length: 129
+Content-Type: application/json
+
+{
+   "descricao":"OUTROS",
+    "estado": true
+}                             
+```
+ATUALIZAÇÃO DE FORMA DE PAGAMENTO:
+
+- PUT /Alocação/9
+```
+http://localhost:8080/formaPagto/9
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+    "id": 9,
+    "descricao":"OUTROS",
+    "estado": false
+}                                      
+```
+- PATCH: /formaPagto/9
+```
+http://localhost:8080/formaPagto/9
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+  "estado": false
+}
+```
+DELEÇÃO DE FORMA DE PAGAMENTO
+- DELETE /formaPagto/{id}
+```
+DELETE http://localhost:8080/formaPagto/9
+HTTP/1.1 204 No Content
+Content-Length: 142
+Content-Type: application/json
+
+```
+<h1 align="center">
+  API CONDUTORES
+</h1>
+
+<p align="center">
+ https://github.com/jessemusic/FIAP-GRUPO-44 
+</p>
+
+
+## API Endpoints
+
+Para fazer as requisições HTTP abaixo, foi utilizada a ferramenta [http](https://web.postman.co/workspaces):
+
+
+- GET /condutores
+```
+http GET http://localhost:8080/pescondutores
+
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+    "data": [
+        {
+            "id": 3,
+            "nome": "Herick",
+            "sobrenome": "Raposo",
+            "dataNascimento": "1997-10-21",
+            "sexo": "M",
+            "idade": 26,
+            "email": "herickraposo97@gmail.com",
+            "phone": "(35)3343-2488",
+            "cell": "(35)98887-1778",
+            "fotosUrls": "http://example.com/johndoe.jpg",
+            "nat": "BR",
+            "somatorioCustoMensal": null,
+            "veiculos": [
+                {
+                    "id": 7,
+                    "marca": "FIAT",
+                    "modelo": "UNO",
+                    "matricula": "1239123832924",
+                    "cavalos": 500
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "nome": "João",
+            "sobrenome": "Silva",
+            "dataNascimento": "1990-01-15",
+            "sexo": "M",
+            "idade": 32,
+            "email": "herickraposo97@gmail.com",
+            "phone": "123-456-7890",
+            "cell": "987-654-3210",
+            "fotosUrls": "https://acesse.one/3otj2",
+            "nat": "Brasil",
+            "somatorioCustoMensal": null,
+            "veiculos": [
+                {
+                    "id": 8,
+                    "marca": "HYUNDAI",
+                    "modelo": "HB20",
+                    "matricula": "PUN2515",
+                    "cavalos": 300
+                }
+            ]
+        }
+    ],
+    "paginator": {
+        "pageNumber": 0,
+        "totalElements": 2,
+        "totalPages": 1
+    }
+
+```
+CADASTRO DE CONDUTORES
+- POST /condutores
+```
+http POST http://localhost:8080/pescondutores
+
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+  "nome": "João",
+  "sobrenome": "Silva",
+  "dataNascimento": "1990-01-15",
+  "sexo": "M",
+  "idade": 32,
+  "email":"herickraposo97@gmail.com",
+  "phone": "123-456-7890",
+  "cell": "987-654-3210",
+  "fotosUrls": "https://acesse.one/3otj2",
+  "nat": "Brasil"
+}
+```
+
+- GET /pessoas/{id}
+```
+http://localhost:8080/condutores/6
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+    "id": 6,
+    "nome": "João",
+    "sobrenome": "Silva",
+    "dataNascimento": "1990-01-15",
+    "sexo": "M",
+    "idade": 32,
+    "email": "herickraposo97@gmail.com",
+    "phone": "123-456-7890",
+    "cell": "987-654-3210",
+    "fotosUrls": "https://acesse.one/3otj2",
+    "nat": "Brasil",
+    "somatorioCustoMensal": null,
+    "veiculos": [
+        {
+            "id": 8,
+            "marca": "HYUNDAI",
+            "modelo": "HB20",
+            "matricula": "PUN2515",
+            "cavalos": 300
+        }
+    ]
+}           
+```
+
+- PUT /pesscondutoresoas/3
+```
+tp://localhost:8080/condutores/3
+HTTP/1.1 200 OK
+Content-Type: application/json
+transfer-encoding: chunked
+
+{
+    "id": 3,
+    "nome": "João",
+    "sobrenome": "Silva",
+    "dataNascimento": "1990-01-15",
+    "sexo": "M",
+    "idade": 32,
+    "email": "herickraposo97@gmail.com",
+    "phone": "123-456-7890",
+    "cell": "987-654-3210",
+    "fotosUrls": "https://acesse.one/3otj2",
+    "nat": "Brasil",
+    "somatorioCustoMensal": null
+}
+```
+Alteração de campo único por exemplo:
+- PATCH /condutores/{id}
+```
+PATCH http://localhost:8080/condutores/1
+HTTP/1.1 200 OK
+Content-Length: 142
+Content-Type: application/json
+
+{
+
+   "sobrenome": "Rancho fundo Mauá"
+           
+}
+ Retorna a alteração 
+{
+    "id": 1,
+    "nome": "Fernanda",
+    "sobrenome": "Rancho fundo Mauá",
+    "dataNascimento": "1971-01-21",
+    "sexo": "F"
+}
+```
+
+Deletando uma pessoa:
+- DELETE /condutores/{id}
+```
+DELETE http://localhost:8080/condutores/1
+HTTP/1.1 204 No Content
+Content-Length: 142
+Content-Type: application/json
+
+```
+
+<h1 align="center">
+  API VEICULO
+</h1>
+
+<p align="center">
+ https://github.com/jessemusic/FIAP-GRUPO-44 
+</p>
+
+API para gerenciamento de veiculos. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de veiculos.
+
+## API Endpoints
+
+
+Lista de veiculos
+
+- GET /veiculo
+
+```
+http GET http://localhost:8080/veiculo
+{
+    "content": [
+        {
+            "id": 7,
+            "marca": "FIAT",
+            "modelo": "UNO",
+            "matricula": "1239123832924",
+            "cavalos": 500,
+            "condutor": {
+                "id": 3,
+                "nome": "João",
+                "sobrenome": "Silva",
+                "dataNascimento": "1990-01-15",
+                "sexo": "M",
+                "idade": 32,
+                "email": "herickraposo97@gmail.com",
+                "phone": "123-456-7890",
+                "cell": "987-654-3210",
+                "fotosUrls": "https://acesse.one/3otj2",
+                "nat": "Brasil",
+                "somatorioCustoMensal": null
+            },
+            "listaAlocacao": [
+                {
+                    "id": 1,
+                    "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+                    "dataSaida": null,
+                    "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+                    "dataFimPago": null
+                },
+                {
+                    "id": 2,
+                    "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+                    "dataSaida": "2023-11-02T17:07:26.000+00:00",
+                    "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+                    "dataFimPago": "2023-11-02T18:00:00.000+00:00"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "marca": "HYUNDAI",
+            "modelo": "HB20",
+            "matricula": "PUN2515",
+            "cavalos": 300,
+            "condutor": {
+                "id": 6,
+                "nome": "João",
+                "sobrenome": "Silva",
+                "dataNascimento": "1990-01-15",
+                "sexo": "M",
+                "idade": 32,
+                "email": "herickraposo97@gmail.com",
+                "phone": "123-456-7890",
+                "cell": "987-654-3210",
+                "fotosUrls": "https://acesse.one/3otj2",
+                "nat": "Brasil",
+                "somatorioCustoMensal": null
+            },
+            "listaAlocacao": [
+                {
+                    "id": 8,
+                    "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+                    "dataSaida": null,
+                    "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+                    "dataFimPago": "2023-11-05T10:00:00.000+00:00"
+                },
+                {
+                    "id": 9,
+                    "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+                    "dataSaida": "2023-11-05T12:38:05.000+00:00",
+                    "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+                    "dataFimPago": "2023-11-05T10:00:00.000+00:00"
+                }
+            ]
+        }
+    ],
+    "pageable": {
+        "pageNumber": 0,
+        "pageSize": 10,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalElements": 2,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0,
+    "sort": {
+        "empty": true,
+        "sorted": false,
+        "unsorted": true
+    },
+    "numberOfElements": 2,
+    "first": true,
+    "empty": false
+}
+```
+
+Possiveis filtros;
+- - **pagina**:Parametro não obrigatório que define o numero da pagina que o usuário deseja acessar
+- - **tamanho**: Parametro não obrigatório que define a quantidade de itens que serão retornados pela listagem
+- - **matriculaina**: Inscrição do veiculo
+- - **marca**: Marca do veiculo
+- - **Modelo**: Modelo do veiculo
+
+
+* GET /veiculo/{id}
+```
+http://localhost:8080/veiculo/8
+
+ {
+    "id": 8,
+    "marca": "HYUNDAI",
+    "modelo": "HB20",
+    "matricula": "PUN2515",
+    "cavalos": 300,
+    "condutor": {
+        "id": 6,
+        "nome": "João",
+        "sobrenome": "Silva",
+        "dataNascimento": "1990-01-15",
+        "sexo": "M",
+        "idade": 32,
+        "email": "herickraposo97@gmail.com",
+        "phone": "123-456-7890",
+        "cell": "987-654-3210",
+        "fotosUrls": "https://acesse.one/3otj2",
+        "nat": "Brasil",
+        "somatorioCustoMensal": null
+    },
+    "listaAlocacao": [
+        {
+            "id": 8,
+            "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+            "dataSaida": null,
+            "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T10:00:00.000+00:00"
+        },
+        {
+            "id": 9,
+            "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+            "dataSaida": "2023-11-05T12:38:05.000+00:00",
+            "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T10:00:00.000+00:00"
+        }
+    ]
+}
+```
+
+CADASTRO DE VEICULO
+* POST /veiculoVEICULO
+
+```
+http POST http://localhost:8080/veiculo
+HTTP/1.1 201 CREATED
+Content-Length: 129
+Content-Type: application/json
+
+{
+  "marca": "HYUNDAI",
+  "modelo": "HB20",
+  "matricula": "PUN2515",
+  "cavalos": 300,
+  "condutor": {
+    "id": 6
+  }
+}
+```
+ATUALIZAÇÃO DE VEICULO:
+
+- PUT /veiculo/9
+```
+http://localhost:8080/veiculo/9
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+  "id":9,
+  "marca": "HYUNDAI",
+  "modelo": "HB20",
+  "matricula": "PUN2515",
+  "cavalos": 300,
+  "condutor": {
+    "id": 6
+  }
+}
+```
+- PATCH: /veiculo/9
+```
+http://localhost:8080/veiculo/9
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+  "modelo": "HB20"
+}
+```
+DELEÇÃO DE VEICULO
+- DELETE /eletrodomesticos/{id}
+```
+DELETE http://localhost:8080/VEICULO/9
+HTTP/1.1 204 No Content
+Content-Length: 142
+Content-Type: application/json
+
+```
+
+## API Endpoints
+
+#LISTA DE PARAMETRIZAÇÃO PAGAMENTO
+
+```
+GET http://localhost:8080/buscar-todos?pagina=0&tamanho=10
+
+RESPONSE
+{
+    "data": {
+        "content": [
+            {
+                "id": 8,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": {
+                    "id": 2,
+                    "descricao": "CREDITO",
+                    "estado": true
+                },
+                "periodoEstacionamento": "POR_HORA"
+            },
+            {
+                "id": 9,
+                "data": "2023-11-05",
+                "valorPorHora": 10.50,
+                "formaPagamento": {
+                    "id": 2,
+                    "descricao": "CREDITO",
+                    "estado": true
+                },
+                "periodoEstacionamento": "FIXO"
+            },
+            {
+                "id": 10,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": {
+                    "id": 2,
+                    "descricao": "CREDITO",
+                    "estado": true
+                },
+                "periodoEstacionamento": "POR_HORA"
+            }
+        ],
+        "pageable": {
+            "pageNumber": 0,
+            "pageSize": 10,
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "offset": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "last": true,
+        "totalElements": 3,
+        "totalPages": 1,
+        "size": 10,
+        "number": 0,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "numberOfElements": 3,
+        "first": true,
+        "empty": false
+    },
+    "paginator": {
+        "pageNumber": 0,
+        "totalElements": 3,
+        "totalPages": 1
+    }
+}
+
+```
+LISTAR POR ID
+
+
+```
+GET http://localhost:8080/buscar-getID?id=1
+
+RESPONSE:
+{
+    "id": 10,
+    "data": "2023-11-02",
+    "valorPorHora": 10.50,
+    "formaPagamento": {
+        "id": 2,
+        "descricao": "CREDITO",
+        "estado": true
+    },
+    "periodoEstacionamento": "POR_HORA"
+}
+
+
+```
+#CADASTRAR PARAMETRIZAÇÃO PAGAMENTO
+
+```
+POST http://localhost:8080/salvar
+
+HTTP/1.1 201 CREATED
+Content-Length: 129
+Content-Type: application/json
+
+REQUEST BODY
+
+{
+  "id": 1,
+  "data": "2023-11-02",
+  "valorPorHora": 10.5,
+  "formaPagamento": {
+    "id": 2
+  },
+  "periodoEstacionamento": "POR_HORA"
+}
+
+
+RESPONSE
+
+{
+    "id": 1,
+    "rua": "Avenida Lins de Vasconcelos",
+    "numero": 3550308,
+    "bairro": "Cambuci",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "cep": "01538001"
+}
+
+
+```
+#ATUALIZAR PARAMETRIZAÇÃO DOCUMENTO
+
+```
+PUT http://localhost:8080/atualizar/3
+
+REQUEST BODY
+{
+   "rua":"RUA 5",
+   "numero":"1000",
+   "bairro":"CAPÃO REDONDA",
+   "cidade":"SÃO PAULO",
+   "estado":"SP"
+}
+
+RESPOSE
+
+{
+    "id": 1,
+    "rua": "RUA 5",
+    "numero": 1000,
+    "bairro": "CAPÃO REDONDA",
+    "cidade": "SÃO PAULO",
+    "estado": "SP",
+    "cep": "01538001"
+}
+
+```
+DELETANDO ENDEREÇO
+```
+
+http://localhost:8080/apagar/10
+
+Removido o endereço de ID: 10
+
+```
+
+<h1 align="center">
+  API ALOCAÇÃO
+</h1>
+
+<p align="center">
+ https://github.com/jessemusic/FIAP-GRUPO-44 
+</p>
+
+API para gerenciamento de alocações. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de alocações.
+
+## API Endpoints
+
+
+Lista de ALOCAÇÃO
+
+- GET /alocacao
+
+```
+http GET http://localhost:8080/alocacao
+{
+    "data": [
+        {
+            "id": 1,
+            "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+            "dataSaida": null,
+            "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+            "dataFimPago": null,
+            "veiculo": {
+                "id": 7,
+                "marca": "FIAT",
+                "modelo": "UNO",
+                "matricula": "1239123832924",
+                "cavalos": 500
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 8,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "POR_HORA"
+            }
+        },
+        {
+            "id": 2,
+            "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+            "dataSaida": "2023-11-02T17:07:26.000+00:00",
+            "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+            "dataFimPago": "2023-11-02T18:00:00.000+00:00",
+            "veiculo": {
+                "id": 7,
+                "marca": "FIAT",
+                "modelo": "UNO",
+                "matricula": "1239123832924",
+                "cavalos": 500
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 8,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "POR_HORA"
+            }
+        },
+        {
+            "id": 3,
+            "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+            "dataSaida": "2023-11-05T12:31:13.000+00:00",
+            "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T12:31:13.000+00:00",
+            "veiculo": {
+                "id": 7,
+                "marca": "FIAT",
+                "modelo": "UNO",
+                "matricula": "1239123832924",
+                "cavalos": 500
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 8,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "POR_HORA"
+            }
+        },
+        {
+            "id": 4,
+            "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+            "dataSaida": "2023-11-05T12:33:37.000+00:00",
+            "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T12:33:37.000+00:00",
+            "veiculo": {
+                "id": 7,
+                "marca": "FIAT",
+                "modelo": "UNO",
+                "matricula": "1239123832924",
+                "cavalos": 500
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 8,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "POR_HORA"
+            }
+        },
+        {
+            "id": 5,
+            "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+            "dataSaida": "2023-11-05T12:34:32.000+00:00",
+            "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+            "dataFimPago": "2023-11-02T18:00:00.000+00:00",
+            "veiculo": {
+                "id": 7,
+                "marca": "FIAT",
+                "modelo": "UNO",
+                "matricula": "1239123832924",
+                "cavalos": 500
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 8,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "POR_HORA"
+            }
+        },
+        {
+            "id": 6,
+            "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+            "dataSaida": "2023-11-05T12:34:46.000+00:00",
+            "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T12:31:13.000+00:00",
+            "veiculo": {
+                "id": 7,
+                "marca": "FIAT",
+                "modelo": "UNO",
+                "matricula": "1239123832924",
+                "cavalos": 500
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 8,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "POR_HORA"
+            }
+        },
+        {
+            "id": 7,
+            "dataEntrada": "2023-11-02T08:00:00.000+00:00",
+            "dataSaida": "2023-11-05T12:34:51.000+00:00",
+            "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T12:33:37.000+00:00",
+            "veiculo": {
+                "id": 7,
+                "marca": "FIAT",
+                "modelo": "UNO",
+                "matricula": "1239123832924",
+                "cavalos": 500
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 8,
+                "data": "2023-11-02",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "POR_HORA"
+            }
+        },
+        {
+            "id": 8,
+            "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+            "dataSaida": null,
+            "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T10:00:00.000+00:00",
+            "veiculo": {
+                "id": 8,
+                "marca": "HYUNDAI",
+                "modelo": "HB20",
+                "matricula": "PUN2515",
+                "cavalos": 300
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 9,
+                "data": "2023-11-05",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "FIXO"
+            }
+        },
+        {
+            "id": 9,
+            "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+            "dataSaida": "2023-11-05T12:38:05.000+00:00",
+            "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+            "dataFimPago": "2023-11-05T10:00:00.000+00:00",
+            "veiculo": {
+                "id": 8,
+                "marca": "HYUNDAI",
+                "modelo": "HB20",
+                "matricula": "PUN2515",
+                "cavalos": 300
+            },
+            "estacionamento": {
+                "id": 2,
+                "descricao": "Vaga B",
+                "estado": true
+            },
+            "parametrizacaoPagto": {
+                "id": 9,
+                "data": "2023-11-05",
+                "valorPorHora": 10.50,
+                "formaPagamento": null,
+                "periodoEstacionamento": "FIXO"
+            }
+        }
+    ],
+    "paginator": {
+        "pageNumber": 0,
+        "totalElements": 9,
+        "totalPages": 1
+    }
+}
+```
+
+Possiveis filtros;
+- - **pagina**:Parametro não obrigatório que define o numero da pagina que o usuário deseja acessar
+- - **tamanho**: Parametro não obrigatório que define a quantidade de itens que serão retornados pela listagem
+- - **dataEntrada**: Data de inicio da alocação
+- - **dataSaida**: Data baixa alocação
+- - **dataInnicoPago**: Data inicio do pagamento
+- - **dataFimPago**: Data termino do pagamento
+
+
+* GET /alocacao/{id}
+```
+http://localhost:8080/alocacao/9
+
+ {
+    "id": 9,
+    "dataEntrada": "2023-11-05T10:00:00.000+00:00",
+    "dataSaida": "2023-11-05T12:38:05.000+00:00",
+    "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
+    "dataFimPago": "2023-11-05T10:00:00.000+00:00",
+    "veiculo": {
+        "id": 8,
+        "marca": "HYUNDAI",
+        "modelo": "HB20",
+        "matricula": "PUN2515",
+        "cavalos": 300
+    },
+    "estacionamento": {
+        "id": 2,
+        "descricao": "Vaga B",
+        "estado": true
+    },
+    "parametrizacaoPagto": {
+        "id": 9,
+        "data": "2023-11-05",
+        "valorPorHora": 10.50,
+        "formaPagamento": null,
+        "periodoEstacionamento": "FIXO"
+    }
+}
+```
+
+CADASTRO DE ALOCAÇÃO
+* POST /alocacao
+
+```
+http POST http://localhost:8080/alocacao
+HTTP/1.1 201 CREATED
+Content-Length: 129
+Content-Type: application/json
+
+{
+  "dataEntrada": "2023-11-05T10:00:00",
+  "dataInicioPago": "2023-11-05T10:00:00",
+  "dataFimPago": "2023-11-05T10:00:00",
+  "veiculo": {
+    "id": 8
+  },
+  "estacionamento": {
+    "id": 1
+  },
+  "parametrizacaoPagto": {
+    "id": 9
+    }
+}                                       
+```
+ATUALIZAÇÃO DE ALOCAÇÃO:
+
+- PUT /Alocação/9
+```
+http://localhost:8080/alocacao/9
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+  "id":9,
+  "dataEntrada": "2023-11-05T10:00:00",
+  "dataInicioPago": "2023-11-05T10:00:00",
+  "dataFimPago": "2023-11-05T10:00:00",
+  "veiculo": {
+    "id": 8
+  },
+  "estacionamento": {
+    "id": 1
+  },
+  "parametrizacaoPagto": {
+    "id": 9
+    }
+}                                       
+```
+- PATCH: /alocacao/9
+```
+http://localhost:8080/alocacao/9
+HTTP/1.1 200 OK
+Content-Length: 129
+Content-Type: application/json
+
+{
+  "dataEntrada": "2023-11-05T10:00:00",
+}
+```
+DELEÇÃO DE ELETRODOMÉSTICO
+- DELETE /alocacao/{id}
+```
+DELETE http://localhost:8080/alocacao/9
+HTTP/1.1 204 No Content
+Content-Length: 142
+Content-Type: application/json
+
+```
