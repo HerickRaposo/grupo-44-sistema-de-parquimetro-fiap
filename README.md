@@ -210,7 +210,7 @@ O Swagger poderá ser visualizado em [localhost:8080/swagger-ui.html](http://loc
 </h1>
 
 <p align="center">
-https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap
+ https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap 
 </p>
 
 API para gerenciamento de estacionamentos. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de estacionamentos.
@@ -373,7 +373,7 @@ Content-Type: application/json
 </h1>
 
 <p align="center">
- https://github.com/jessemusic/FIAP-GRUPO-44 
+ https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap 
 </p>
 
 API para gerenciamento de forma de pagamento. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de forma de pagamento.
@@ -505,7 +505,7 @@ Content-Type: application/json
 </h1>
 
 <p align="center">
- https://github.com/jessemusic/FIAP-GRUPO-44 
+ https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap 
 </p>
 
 
@@ -693,7 +693,7 @@ Content-Type: application/json
 </h1>
 
 <p align="center">
- https://github.com/jessemusic/FIAP-GRUPO-44 
+ https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap 
 </p>
 
 API para gerenciamento de veiculos. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de veiculos.
@@ -916,19 +916,28 @@ Content-Type: application/json
 DELEÇÃO DE VEICULO
 - DELETE /eletrodomesticos/{id}
 ```
-DELETE http://localhost:8080/VEICULO/9
+DELETE http://localhost:8080/veiculo/9
 HTTP/1.1 204 No Content
 Content-Length: 142
 Content-Type: application/json
 
 ```
+<h1 align="center">
+  API PARAMETRIZAÇÃO DE PAGAMENTO
+</h1>
+<p align="center">
+ https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap 
+</p>
+
+API para parametrização de siste. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de veiculos.
+
 
 ## API Endpoints
 
 #LISTA DE PARAMETRIZAÇÃO PAGAMENTO
 
 ```
-GET http://localhost:8080/buscar-todos?pagina=0&tamanho=10
+GET http://localhost:8080/parametrizacaoPagto
 
 RESPONSE
 {
@@ -1006,7 +1015,7 @@ LISTAR POR ID
 
 
 ```
-GET http://localhost:8080/buscar-getID?id=1
+GET http://localhost:8080/parametrizacaoPagto/10
 
 RESPONSE:
 {
@@ -1026,7 +1035,7 @@ RESPONSE:
 #CADASTRAR PARAMETRIZAÇÃO PAGAMENTO
 
 ```
-POST http://localhost:8080/salvar
+POST http://localhost:8080/parametrizacaoPagto
 
 HTTP/1.1 201 CREATED
 Content-Length: 129
@@ -1035,7 +1044,6 @@ Content-Type: application/json
 REQUEST BODY
 
 {
-  "id": 1,
   "data": "2023-11-02",
   "valorPorHora": 10.5,
   "formaPagamento": {
@@ -1043,56 +1051,30 @@ REQUEST BODY
   },
   "periodoEstacionamento": "POR_HORA"
 }
+```
+#ATUALIZAR PARAMETRIZAÇÃO PAGAMENTO
 
-
-RESPONSE
+```
+PUT http://localhost:8080/parametrizacaoPagto/1
 
 {
-    "id": 1,
-    "rua": "Avenida Lins de Vasconcelos",
-    "numero": 3550308,
-    "bairro": "Cambuci",
-    "cidade": "São Paulo",
-    "estado": "SP",
-    "cep": "01538001"
+  "id": 1,
+  "data": "2023-11-02",
+  "valorPorHora": 14.5,
+  "formaPagamento": {
+    "id": 2
+  },
+  "periodoEstacionamento": "POR_HORA"
 }
-
-
 ```
-#ATUALIZAR PARAMETRIZAÇÃO DOCUMENTO
-
-```
-PUT http://localhost:8080/atualizar/3
-
-REQUEST BODY
-{
-   "rua":"RUA 5",
-   "numero":"1000",
-   "bairro":"CAPÃO REDONDA",
-   "cidade":"SÃO PAULO",
-   "estado":"SP"
-}
-
-RESPOSE
-
-{
-    "id": 1,
-    "rua": "RUA 5",
-    "numero": 1000,
-    "bairro": "CAPÃO REDONDA",
-    "cidade": "SÃO PAULO",
-    "estado": "SP",
-    "cep": "01538001"
-}
-
-```
-DELETANDO ENDEREÇO
+DELETANDO PARAMETRIZAÇÃO PAGAMENTO
 ```
 
-http://localhost:8080/apagar/10
+http://localhost:8080/parametrizacaoPagto/10
 
-Removido o endereço de ID: 10
-
+HTTP/1.1 204 No Content
+Content-Length: 142
+Content-Type: application/json
 ```
 
 <h1 align="center">
@@ -1100,10 +1082,16 @@ Removido o endereço de ID: 10
 </h1>
 
 <p align="center">
- https://github.com/jessemusic/FIAP-GRUPO-44 
+ https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap 
 </p>
 
-API para gerenciamento de alocações. Ao consumir esta api o desenvolvedor conseguirá realizar a criação, leitura,atualização,leitura e deleção(CRUD) dos registros de alocações.
+A API de alocação consiste no enfoque central da aplicação, na alocação podemos encontrar  de forma centralizada informações de parametrização de pagamento, veiculo alem das informações convencionais como datas de entrada e saida bem como de pagamento.
+De forma especial para que fosse calculado o tempo de estacionamento foi criada rtina e endpoint de verificação de tempo de alocação. Após controle é enviado email para condutores de tempo fixo alarmando quanto tempo falta para finalizar a alocação e para condutores que optaram para tempo variavel envia email informando sobre a renovação automatica da alocação.
+
+
+
+![envioEmail.PNG](envioEmail.PNG)
+envioEmail.PNG
 
 ## API Endpoints
 
@@ -1460,12 +1448,13 @@ Content-Type: application/json
   "dataEntrada": "2023-11-05T10:00:00",
 }
 ```
-DELEÇÃO DE ELETRODOMÉSTICO
+DELEÇÃO DE ALOCAÇÃO
 - DELETE /alocacao/{id}
 ```
 DELETE http://localhost:8080/alocacao/9
 HTTP/1.1 204 No Content
 Content-Length: 142
 Content-Type: application/json
+
 
 ```
