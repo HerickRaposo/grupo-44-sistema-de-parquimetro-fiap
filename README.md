@@ -5,6 +5,7 @@
 
 Conforme solicitado foi desenvolvido sistema de gerenciamento de parquimetro onde o condutor cadastra suas informações pessoais e de contato bem como as informações de seu veiculo, posteriormente o mesmo escolhe a forma que irá efetuar o pagamento podendo ser PIX,cartão ou outras formas cadastradas pelos gestores do sistema escolhendo também o periodo a ser cobrado podendo escolher entre período FIXO ou POR HORA. Após o colheta de dados do condutor e veiculo e parametrização de pagamento o sistema iniciará a alocação do veiculo e posteriormente iniciará a contagem de tempo. No decorrer das horas, baseado na escolha de periodo de estacionamento (Fixo/hora) o sistema emitirá alertas via email para o condutor, caso o condutor tenha optado por cobrança por hora o sistema enviará email alertando que a alocação foi renovada automaticamente por mais uma hora pelo sistema, entretanto caso tenha escolhido por periodo fixo, o sistema avisará qual tempo restante para vencer o prazo de alocação. Este processo de verificação se repetirá até a saida(Baixa) dada pelo condutor no sistema onde oobtirá relatório contendo todas informações sobre alocação.
 
+![modelagem.jpg](modelagem.jpg)
 
 <h1 align="center">
   Desenvolvimento das APIs
@@ -12,9 +13,9 @@ Conforme solicitado foi desenvolvido sistema de gerenciamento de parquimetro ond
 
 ## Tecnologias
 
- [GitLab](https://about.gitlab.com/):Plataforma de gerenciamento de ciclo de vida de desenvolvimento de software com versionamento de codigo git.
- 
- [GitLab](https://about.gitlab.com/):Plataforma de gerenciamento de ciclo de vida de desenvolvimento de software com versionamento de codigo git.
+[GitLab](https://about.gitlab.com/):Plataforma de gerenciamento de ciclo de vida de desenvolvimento de software com versionamento de codigo git.
+
+[GitLab](https://about.gitlab.com/):Plataforma de gerenciamento de ciclo de vida de desenvolvimento de software com versionamento de codigo git.
 - [Spring Boot](https://spring.io/projects/spring-boot):Modulo derivado do Spring Framework que facilita desenvolvimento de aplicações java implementando injeção e inversão de dependencias
 - [H2](https://github.com/h2database/h2database/releases/download/version-2.2.220/h2.pdf): Gerenciador de banco de dados relacional
 - [Postman](https://learning.postman.com/docs/developer/postman-api/intro-api/): Ferramenta destinada a desenvolvedores que possibilita testar chamadas API e gerar documentação de forma iterativa.Foi usado neste projeto para gerar collections e realizar teste de chamadas aos endpoints;
@@ -59,7 +60,7 @@ services:
       - "3306:3306"
 
 ```
-- [CI](https://about.gitlab.com/) (Continuous Integration):  CI (Continuous Integration) é uma prática de desenvolvimento em que as alterações de código são regularmente integradas e testadas automaticamente. O GitLab CI automatiza esse processo, organizando-o em pipelines, que representam as etapas de construção, teste e implantação de um aplicativo. Isso melhora a eficiência e a qualidade do desenvolvimento de software.
+- [CI](https://about.gitlab.com/) (Continuous Integration):  CI (Continuous Integration) é uma prática de desenvolvimento em que as alterações de código são regularmente integradas e testadas automaticamente. O GitLab CI automatiza esse processo, organizando-o em pipelines, que representam as etapas de construção, teste e implantação de um aplicativo. Isso melhora a eficiência e a qualidade do desenvolvimento de software.[Veja pipeline executada](https://gitlab.com/mattec1/grupo-44-sistema-de-parquimetro-fiap/-/jobs/5473301001)
 
 ```
 ###############################################
@@ -234,7 +235,7 @@ http GET http://localhost:8080/estacionamento
                 {
                     "id": 7,
                     "dataEntrada": "2023-11-05T10:00:00.000+00:00",
-                    "dataSaida": null,
+                    "dataSaida": 2023-11-05T10:00:00.000+00:00,
                     "dataInicioPago": "2023-11-05T10:00:00.000+00:00",
                     "dataFimPago": "2023-11-05T10:00:00.000+00:00"
                 },
@@ -262,9 +263,9 @@ http GET http://localhost:8080/estacionamento
                 {
                     "id": 1,
                     "dataEntrada": "2023-11-02T08:00:00.000+00:00",
-                    "dataSaida": null,
+                    "dataSaida": 2023-11-05T11:00:00.000+00:00,
                     "dataInicioPago": "2023-11-02T08:00:00.000+00:00",
-                    "dataFimPago": null
+                    "dataFimPago": 2023-11-05T11:00:00.000+00:00
                 }
             ]
         }
@@ -536,7 +537,6 @@ Content-Type: application/json
             "cell": "(35)98887-1778",
             "fotosUrls": "http://example.com/johndoe.jpg",
             "nat": "BR",
-            "somatorioCustoMensal": null,
             "veiculos": [
                 {
                     "id": 7,
@@ -559,7 +559,6 @@ Content-Type: application/json
             "cell": "987-654-3210",
             "fotosUrls": "https://acesse.one/3otj2",
             "nat": "Brasil",
-            "somatorioCustoMensal": null,
             "veiculos": [
                 {
                     "id": 8,
@@ -620,7 +619,6 @@ Content-Type: application/json
     "cell": "987-654-3210",
     "fotosUrls": "https://acesse.one/3otj2",
     "nat": "Brasil",
-    "somatorioCustoMensal": null,
     "veiculos": [
         {
             "id": 8,
@@ -652,7 +650,6 @@ transfer-encoding: chunked
     "cell": "987-654-3210",
     "fotosUrls": "https://acesse.one/3otj2",
     "nat": "Brasil",
-    "somatorioCustoMensal": null
 }
 ```
 Alteração de campo único por exemplo:
@@ -727,7 +724,6 @@ http GET http://localhost:8080/veiculo
                 "cell": "987-654-3210",
                 "fotosUrls": "https://acesse.one/3otj2",
                 "nat": "Brasil",
-                "somatorioCustoMensal": null
             },
             "listaAlocacao": [
                 {
@@ -764,7 +760,6 @@ http GET http://localhost:8080/veiculo
                 "cell": "987-654-3210",
                 "fotosUrls": "https://acesse.one/3otj2",
                 "nat": "Brasil",
-                "somatorioCustoMensal": null
             },
             "listaAlocacao": [
                 {
@@ -842,7 +837,6 @@ http://localhost:8080/veiculo/8
         "cell": "987-654-3210",
         "fotosUrls": "https://acesse.one/3otj2",
         "nat": "Brasil",
-        "somatorioCustoMensal": null
     },
     "listaAlocacao": [
         {
