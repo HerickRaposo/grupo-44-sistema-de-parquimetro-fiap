@@ -40,8 +40,6 @@ public class CondutorDTO {
     private String cell;
     private String fotosUrls;
     private String nat;
-    @Null(message = "O valor do somatorio deve ser calculado automaticamente")
-    private Double somatorioCustoMensal;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<EnderecoDTO> enderecos = new ArrayList<>();
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
